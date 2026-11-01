@@ -1,0 +1,4027 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #212333;
+  color: #e0e0e0;
+  height: 100vh;
+  overflow: hidden;
+  touch-action: none;
+}
+
+#app {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── Landing Screen ──
+   Empty (robot-less) APK landing art. The family-scoped art kicks in on
+   the connection screen once the user actually picks Go2 / G1.
+   The bg image sits on a ::before layer so filter: invert can flip just
+   the art for the light theme without touching the title / tiles. */
+.app-root.landing-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f1114;
+  position: relative;
+  overflow: hidden;
+}
+.app-root.landing-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/sprites/bg_main_empty.png') center / cover no-repeat;
+  z-index: 0;
+}
+.app-root.landing-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-container {
+  text-align: center;
+  /* Translucent panel so the bg art shows through — lower opacity (~40%)
+     than the connection-modal so the empty hero stays prominent. */
+  background: rgba(26, 29, 35, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 32px 40px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="light"] .landing-container {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(60, 75, 120, 0.12);
+  box-shadow: 0 4px 16px rgba(60, 75, 120, 0.12);
+}
+
+.landing-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 32px;
+  letter-spacing: 0.5px;
+}
+
+.landing-tiles {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Connection Screen ──
+   Family-scoped background image (Go2 / G1 / R1 hero) — mirrors the APK.
+   All three heroes carry their own blue-grey studio haze in the PNG so they
+   blend into `background-color` instead of floating on it (the R1 asset ships
+   as a bare cutout in the APK, so its haze is baked in here to match).
+   Same ::before layer trick as the landing screen: the bg image is on
+   a pseudo-element so filter: invert flips just the art in light mode
+   without affecting the modal sitting on top. */
+.app-root.connection-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f1114;
+  position: relative;
+  overflow: hidden;
+}
+.app-root.connection-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: 0;
+  transition: filter 0.2s;
+}
+.app-root.connection-screen.connection-family-go2::before {
+  background-image: url('/sprites/bg_main_leading.png');
+}
+.app-root.connection-screen.connection-family-g1::before {
+  background-image: url('/sprites/bg_main_g1.png');
+}
+.app-root.connection-screen.connection-family-r1::before {
+  background-image: url('/sprites/bg_main_r1.png');
+}
+.app-root.connection-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.connection-modal {
+  width: 360px;
+  /* Semi-transparent so the family bg art shows through; backdrop-filter
+     blurs the art behind the panel so form labels stay readable. */
+  background: rgba(26, 29, 35, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Two-row header for the Connect / Account-login modals: a small "Main
+ * page" back link on its own row, then the title below it (`.conn-title`
+ * keeps the same look as the legacy `.connection-panel h2` rule). */
+.connection-panel .conn-back-row {
+  margin-bottom: 6px;
+}
+
+.connection-panel .conn-back-link {
+  background: transparent;
+  border: none;
+  padding: 4px 6px 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aaa;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.connection-panel .conn-back-link:hover {
+  color: #6879e4;
+}
+
+.connection-panel .conn-back-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.connection-panel .conn-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #fff;
+  text-align: center;
+}
+
+.conn-remote-hint {
+  margin-top: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #b0b3bb;
+  background: rgba(79, 195, 247, 0.06);
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  border-radius: 6px;
+  line-height: 1.4;
+}
+
+.conn-remote-hint a {
+  color: #4fc3f7;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.connection-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 6px;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #12141a;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  border-color: #6879e4;
+}
+
+.btn-connect {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  /* Bright cyan gradient — pops against the translucent dark modal sitting
+     over the Go2/G1 hero art. Dark text + subtle glow for max contrast. */
+  background: linear-gradient(230deg, #5dd4ff, #1ea7e6);
+  color: #07131a;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 14px rgba(79, 195, 247, 0.35), 0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  transition: filter 0.15s, transform 0.05s, box-shadow 0.15s;
+}
+
+.btn-connect:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 18px rgba(79, 195, 247, 0.5), 0 1px 0 rgba(255, 255, 255, 0.22) inset;
+}
+
+.btn-connect:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-connect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ip-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ip-row input {
+  flex: 1;
+}
+
+.btn-scan {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1d23;
+  color: #6879e4;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-scan:hover {
+  background: #252830;
+}
+
+.btn-scan:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scan results dropdown — shown when the network scan finds >1 robot.
+   Caps at ~4 rows tall (each row ~36 px) so a network with many dogs
+   doesn't push the rest of the connection panel off-screen. */
+.scan-results {
+  margin-top: 6px;
+  max-height: 144px;
+  overflow-y: auto;
+  border: 1px solid #2a2d35;
+  border-radius: 6px;
+  background: #0a0c10;
+  display: flex;
+  flex-direction: column;
+}
+.scan-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #1a1d23;
+  color: #e0e0e0;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.scan-result-row:last-child { border-bottom: none; }
+.scan-result-row:hover { background: rgba(79, 195, 247, 0.08); }
+.scan-result-ip { font-family: monospace; color: #4fc3f7; }
+.scan-result-sn { font-family: monospace; font-size: 11px; color: #888; }
+
+html[data-theme="light"] .scan-results {
+  background: #ffffff;
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .scan-result-row {
+  color: #1a1d23;
+  border-bottom-color: #eef1f7;
+}
+html[data-theme="light"] .scan-result-row:hover { background: #eef1f7; }
+html[data-theme="light"] .scan-result-ip { color: #4a5ccf; }
+html[data-theme="light"] .scan-result-sn { color: #5a6170; }
+
+/* Auth toggle tabs (Remote mode: credentials vs token) */
+.auth-toggle-row {
+  display: flex;
+  gap: 0;
+  background: #12141a;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid #333;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.auth-tab.active {
+  background: rgba(104, 121, 228, 0.15);
+  color: #6879e4;
+}
+
+html[data-theme="light"] .auth-toggle-row {
+  background: #f3f5f9;
+  border-color: #d4d9e4;
+}
+html[data-theme="light"] .auth-tab {
+  color: #5a6170;
+}
+html[data-theme="light"] .auth-tab.active {
+  background: rgba(74, 92, 207, 0.12);
+  color: #4a5ccf;
+}
+
+.status {
+  margin-top: 12px;
+  font-size: 13px;
+  text-align: center;
+  min-height: 20px;
+}
+
+.status-info { color: #6879e4; }
+.status-success { color: #4aef7a; }
+.status-error { color: #ef4a4a; }
+
+/* ── Control Screen ── */
+.app-root.control-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-image: url('/sprites/remoteControl_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+.control-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.control-overlay > * {
+  pointer-events: auto;
+}
+
+/* ── Nav Bar (Top) ── */
+.nav-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+  color: #fff;
+  font-size: 19px;
+  line-height: 26px;
+  /* The G1 control screen overlays this bar directly on the live camera
+     feed (no dark 3D scene behind it like Go2), so white text washes out
+     on bright frames. A top-down dark scrim keeps it legible in dark mode;
+     the light-theme rule below replaces this with a solid white bar. */
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* Reinforce legibility of the bar's text/icons over arbitrary camera frames. */
+.nav-bar-title,
+.motor-temp-label,
+.net-type-label,
+.battery-text {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.nav-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  margin-left: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn img {
+  width: 14px;
+  height: 21px;
+  filter: brightness(2);
+}
+
+.nav-bar-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+}
+
+
+/* Battery icon (APK: 32x18 bordered box with fill bar and text inside) */
+.battery-icon {
+  display: flex;
+  align-items: center;
+}
+
+.battery-icon .battery-fill-box {
+  width: 48px;
+  height: 27px;
+  border-radius: 3px;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  position: relative;
+  padding: 3px;
+  /* Light inner background so the empty portion stays visible and the
+     dark percentage text remains readable over it */
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.battery-icon .battery-fill-box::after {
+  content: '';
+  width: 4px;
+  height: 11px;
+  background-color: #fff;
+  border-radius: 2px;
+  position: absolute;
+  right: -5px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.battery-fill {
+  height: 100%;
+  width: 0%;
+  background-color: #42CF55;
+  transition: width 0.5s, background-color 0.5s;
+}
+
+.battery-text {
+  font-size: 18px;
+  font-weight: 600;
+  /* Dark text with a white halo so it stays readable over green / yellow /
+     red fill regardless of level */
+  color: #1a1d23;
+  text-shadow: 0 0 2px #fff, 0 0 3px rgba(255, 255, 255, 0.8);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.65);
+  white-space: nowrap;
+}
+
+.motor-temp-label {
+  font-size: 18px;
+  font-weight: 500;
+  color: #aaa;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.net-type-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.wifi-icon {
+  width: 40px;
+  height: 40px;
+  opacity: 0.8;
+}
+
+/* ── Video Wrapper (full-screen background video) ── */
+.video-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border-radius: 0;
+  transition: all 0.3s;
+  background-color: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-wrapper .video-loading {
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #fff;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ── PIP Camera (Small View, Draggable) ── */
+.pip-camera {
+  position: absolute;
+  top: 56px;
+  left: 12px;
+  width: 385px;
+  height: 260px;
+  background: #282828;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 25;
+  cursor: grab;
+  transition: width 0.3s, height 0.3s;
+  touch-action: none;
+}
+
+.pip-camera:active {
+  cursor: grabbing;
+}
+
+.pip-camera.pip-expanded {
+  width: 400px;
+  height: 270px;
+}
+
+.pip-camera video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pip-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 13px;
+}
+
+/* ── Operation Layout (3-wrapper) ── */
+.operation-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 24px 15px 24px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.operation-wrapper > * {
+  pointer-events: auto;
+}
+
+/* Wrapper 1: Left joystick + 3D map */
+.wrapper-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Wrapper 2: Center menu/actions */
+.wrapper-2 {
+  flex: 1;
+  margin-left: 19px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Wrapper 3: Right side (right joystick) */
+.wrapper-3 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+}
+
+/* ── Joystick ── */
+.joystick-box {
+  width: 148px;
+  height: 148px;
+  position: relative;
+  touch-action: none;
+}
+
+.joystick-box::before {
+  content: '';
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  background: linear-gradient(179deg, #000, rgba(0, 0, 0, 0));
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.11;
+  z-index: 0;
+}
+
+.joystick-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  z-index: 9;
+  pointer-events: none;
+  transition: none;
+}
+
+.joystick-knob img {
+  width: 100%;
+  height: 100%;
+}
+
+.joystick-box.disable {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ── NavBar circular icons (input source + 3-dot menu) ──
+   Match the inline-styled BT / theme icons in status-bar.ts. */
+.nav-circle-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(26, 29, 35, 0.95);
+  border: 1.5px solid #3a3d45;
+  margin-left: 4px;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  padding: 0;
+}
+
+.nav-circle-icon:hover {
+  transform: scale(1.05);
+  border-color: #6879e4;
+}
+
+.nav-circle-icon:active {
+  transform: scale(0.97);
+}
+
+.nav-circle-icon[data-active="true"] {
+  background: rgba(66, 207, 85, 0.15);
+  border-color: rgba(66, 207, 85, 0.5);
+}
+
+.nav-circle-icon:disabled {
+  cursor: not-allowed;
+}
+
+.nav-circle-icon:disabled:hover {
+  transform: none;
+  border-color: #3a3d45;
+}
+
+/* ── Settings Drawer (slide-in from the right, opened via 3-dot menu) ── */
+.settings-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 100;
+  pointer-events: none;
+  transition: background 0.22s ease;
+}
+
+.settings-drawer-overlay.open {
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+
+.settings-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 92vw);
+  background: #0f1114;
+  border-left: 1px solid #1f2229;
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-drawer-overlay.open .settings-drawer-panel {
+  transform: translateX(0);
+}
+
+.settings-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #1a1d23;
+  flex-shrink: 0;
+  background: rgba(15, 17, 20, 0.95);
+}
+
+.settings-drawer-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.settings-drawer-close {
+  background: rgba(26, 29, 35, 0.8);
+  border: 1px solid #2a2d35;
+  color: #b0b3bb;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.settings-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.settings-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+}
+
+/* The embedded SettingsPage drops its own page-header in drawer mode,
+   so the .settings-page wrapper just needs to flex naturally inside the
+   body. */
+.settings-drawer-body .settings-page {
+  height: auto;
+}
+
+/* Light-theme overrides for drawer chrome. */
+html[data-theme="light"] .settings-drawer-panel {
+  background: #f3f5fa;
+  border-left-color: #d4d9e4;
+  box-shadow: -12px 0 32px rgba(60, 75, 120, 0.18);
+}
+
+html[data-theme="light"] .settings-drawer-header {
+  background: rgba(243, 245, 250, 0.95);
+  border-bottom-color: #d4d9e4;
+}
+
+html[data-theme="light"] .settings-drawer-header h2 {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-drawer-close {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #5a6170;
+}
+
+html[data-theme="light"] .settings-drawer-close:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1d23;
+}
+
+/* ── Setting Bar (Side Icons: Radar, Volume, Lamp) ── */
+.setting-bar {
+  position: absolute;
+  top: 70px;
+  right: 18px;
+  height: 58px;
+  background: #111127;
+  border-radius: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px;
+  gap: 4px;
+  z-index: 20;
+}
+
+.setting-btn {
+  width: 42px;
+  height: 42px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.setting-btn:active {
+  background: rgba(104, 121, 228, 0.2);
+}
+
+.setting-btn img {
+  width: 25px;
+  height: 25px;
+}
+
+
+/* ── Emergency Stop (APK: swipe-left to activate) ──
+   Sits just under the top NavBar (60px tall + small gap). */
+.emergency-stop {
+  position: absolute;
+  top: 72px;
+  right: 0;
+  height: 28px;
+  background-color: #ff4848;
+  border-radius: 28px 0 0 28px;
+  padding-left: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #fff;
+  touch-action: none;
+  pointer-events: all;
+  user-select: none;
+  z-index: 20;
+  overflow: hidden;
+  box-shadow: 0 0 0 #ff4848;
+  /* width is driven by JS (REST_WIDTH ↔ FULL_WIDTH) to enable the
+     APK drag-to-stretch animation. */
+}
+
+.emergency-stop.animation {
+  animation: stopFlash 0.8s linear alternate infinite;
+}
+
+.estop-arrow {
+  font-size: 14px;
+  margin-right: 4px;
+  transition: transform 0.3s;
+}
+
+.estop-arrow.active {
+  transform: rotate(180deg);
+}
+
+.estop-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.estop-drag-area {
+  position: absolute;
+  width: 120%;
+  height: 180%;
+  opacity: 0;
+  left: -10px;
+  cursor: grab;
+}
+
+/* Banner that appears under the e-stop when the user tries to drive
+   while the stop is engaged. Throttled in JS so it never spams. */
+.estop-blocked-toast {
+  position: absolute;
+  top: 110px;            /* just below the e-stop (top:72 + 28 + 10) */
+  right: 12px;
+  max-width: 320px;
+  padding: 8px 14px;
+  background: rgba(255, 72, 72, 0.95);
+  color: #fff;
+  font-size: 13px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 25;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.estop-blocked-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* View-mode toast (Robot view / Holistic view). Lives above the joysticks,
+   centred so it doesn't collide with the estop banner on the right. */
+.scene-toast {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translate(-50%, -6px);
+  padding: 8px 16px;
+  background: rgba(20, 22, 36, 0.92);
+  color: #fff;
+  font-size: 13px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 25;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.scene-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@keyframes stopFlash {
+  0% {
+    background: #ff4848;
+    color: #fff;
+    box-shadow: 0 0 0 #ff4848;
+  }
+  100% {
+    background: #eb9595;
+    color: #db8e8e;
+    box-shadow: 0 0 8px #ff4848;
+  }
+}
+
+/* ── Action Bar (oval island with grid icon + scrollable actions) ── */
+.action-bar-container {
+  position: relative;
+  max-width: 420px;
+}
+
+.action-island {
+  display: flex;
+  align-items: center;
+  background: rgba(17, 17, 39, 0.6);
+  border-radius: 28px;
+  padding: 4px 8px;
+  gap: 0;
+  backdrop-filter: blur(8px);
+}
+
+/* 4-square grid button on the left */
+.action-grid-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.action-grid-btn:active {
+  background: rgba(104, 121, 228, 0.3);
+}
+
+.action-grid-btn svg {
+  opacity: 0.85;
+}
+
+/* Divider between grid icon and actions */
+.action-island-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+/* Scrollable action items area */
+.action-island-scroll {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  white-space: nowrap;
+}
+
+.action-island-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.action-island-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 72px;
+  min-width: 72px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  position: relative;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.action-island-item:active,
+.action-island-item.active-state {
+  opacity: 1;
+}
+
+/* Greyed out when the FSM won't accept this transition from current state.
+   Applied by ActionBar based on G1 sportState. */
+.action-island-item.action-disabled,
+.action-popup-item.action-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Highlight the row whose g1Key matches the current sport state — the
+   blue active-state indicator. The icon is recoloured via a CSS mask:
+   each icon wrap exposes its SVG URL through the --icon custom
+   property, and the ::after pseudo paints the blue shape on top while
+   the original white <img> is hidden. */
+.action-island-item.action-current > span,
+.action-popup-item.action-current .action-popup-label {
+  color: #95A2F3;
+}
+.action-island-item.action-current,
+.action-popup-item.action-current {
+  opacity: 1;
+}
+
+.action-island-item.action-current .action-icon-wrap,
+.action-popup-item.action-current .action-popup-icon {
+  position: relative;
+}
+.action-island-item.action-current .action-icon-wrap img,
+.action-popup-item.action-current .action-popup-icon img {
+  visibility: hidden;
+}
+.action-island-item.action-current .action-icon-wrap::after,
+.action-popup-item.action-current .action-popup-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #95A2F3;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+}
+
+.action-icon-wrap {
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.action-island-item > span {
+  font-size: 12px;
+  line-height: 10px;
+  color: #fff;
+  transform: scale(0.8);
+  transform-origin: center;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ── Action Popup (grid of all actions/modes) ── */
+.action-popup {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 480px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: rgba(17, 17, 39, 0.95);
+  border-radius: 14px;
+  padding: 14px;
+  z-index: 30;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+.action-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.action-popup-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.action-popup-edit-btn {
+  background: none;
+  border: 1px solid rgba(104, 121, 228, 0.5);
+  border-radius: 14px;
+  color: #6879e4;
+  font-size: 12px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+
+.action-popup-edit-btn:active {
+  background: rgba(104, 121, 228, 0.2);
+}
+
+.action-popup-section {
+  margin-bottom: 12px;
+}
+
+.action-popup-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.action-popup-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.action-popup-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 10px;
+  position: relative;
+  transition: background 0.15s;
+}
+
+.action-popup-item:active {
+  background: rgba(104, 121, 228, 0.2);
+}
+
+.action-popup-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-popup-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.action-popup-label {
+  font-size: 10px;
+  color: #ccc;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+
+/* +/- badges for edit mode */
+.action-popup-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.badge-add {
+  background: #42CF55;
+}
+
+.badge-remove {
+  background: #FF3D3D;
+}
+
+/* ── Toast Notification ── */
+.toast-wrap {
+  z-index: 1000;
+  width: max-content;
+  height: max-content;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast-wrap .toast {
+  width: max-content;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  animation: toastFade 2s forwards;
+}
+
+@keyframes toastFade {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Full-screen Video Background (view swap) ── */
+.video-bg-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  display: none;
+}
+
+/* ── White Noise Background (when no camera) ── */
+.noise-bg-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  display: none;
+  image-rendering: pixelated;
+}
+
+/* ── PIP Noise Canvas ── */
+.pip-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* Mini 3D canvas in PIP (mirrors main three.js scene) */
+.pip-mini-3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+
+/* ── No WebGL Fallback ── */
+.app-root.no-webgl {
+  background-image: url('/sprites/remoteControl_bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* ── Runaway Warning Overlay ── */
+.runaway-warning {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 20px 10px rgba(255, 80, 64, 0.4),
+    inset 0 0 30px 15px rgba(255, 80, 64, 0.3),
+    inset 0 0 40px 20px rgba(255, 80, 64, 0.2);
+  animation: glowPulse 2s ease-in-out infinite;
+  z-index: 50;
+  display: none;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes bt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Slider Control (Volume/Brightness) ── */
+.slider-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: #1a1d23;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 30;
+  min-width: 180px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.slider-popup input[type='range'] {
+  flex: 1;
+  accent-color: #6879e4;
+  height: 4px;
+}
+
+.slider-popup .slider-value {
+  font-size: 12px;
+  color: #fff;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* ── Hub Screen (Connect/Disconnect + WebView + Status) ── */
+.app-root.hub-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f1114;
+}
+
+.hub-container {
+  width: 640px;
+  text-align: center;
+}
+
+.hub-remote-section {
+  background: rgba(26, 29, 35, 0.5);
+  border: 1px solid #1f2229;
+  text-align: left;
+}
+
+.hub-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.hub-info {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 28px;
+}
+
+.hub-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.hub-btn {
+  width: 140px;
+  height: 120px;
+  border-radius: 14px;
+  border: 1px solid #2a2d35;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hub-btn span {
+  font-size: 14px;
+}
+
+.hub-btn-primary {
+  background: linear-gradient(135deg, #1a1d2e, #252840);
+  color: #6879e4;
+  border-color: #3a3d55;
+}
+
+.hub-btn-primary:hover {
+  background: linear-gradient(135deg, #252840, #303560);
+  border-color: #6879e4;
+}
+
+.hub-btn-secondary {
+  background: #1a1d23;
+  color: #aaa;
+  border-color: #2a2d35;
+}
+
+.hub-btn-secondary:hover {
+  background: #252830;
+  border-color: #555;
+  color: #fff;
+}
+
+.hub-btn-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.hub-btn-disconnect {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ff4848;
+  background: transparent;
+  color: #ff4848;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hub-btn-disconnect:hover {
+  background: rgba(255, 72, 72, 0.1);
+}
+
+/* ── Unified Page Header (Status, Services, etc.) ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #1a1d23;
+  flex-shrink: 0;
+  background: rgba(15, 17, 20, 0.95);
+}
+
+.page-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+/* NavBar-style right-side cluster on the mapping page header.
+   Shape mirrors .nav-bar-right (battery / divider / net type / theme / BT). */
+.mapping-header-cluster {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mapping-header-cluster .nav-theme-icon,
+.mapping-header-cluster .nav-bt-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(26, 29, 35, 0.95);
+  border: 1.5px solid #3a3d45;
+  transition: all 0.15s;
+}
+
+.mapping-header-cluster .nav-theme-icon:hover,
+.mapping-header-cluster .nav-bt-icon:hover {
+  transform: scale(1.05);
+  border-color: #6879e4;
+}
+
+.mapping-header-cluster .nav-bt-icon[data-connected="true"] {
+  background: rgba(79, 195, 247, 0.15);
+  border-color: rgba(79, 195, 247, 0.5);
+}
+
+html[data-theme="light"] .mapping-header-cluster .nav-theme-icon,
+html[data-theme="light"] .mapping-header-cluster .nav-bt-icon {
+  background: #ffffff;
+  border-color: #c4cbd6;
+}
+
+.page-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.page-back-btn:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.page-back-btn img {
+  width: 12px;
+  height: 18px;
+  filter: brightness(2);
+}
+
+.page-header-badge {
+  margin-left: auto;
+  font-size: 12px;
+  color: #6879e4;
+  background: rgba(104, 121, 228, 0.1);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+/* ── Status Screen ── */
+.app-root.status-screen {
+  background: #0f1114;
+  overflow: hidden;
+}
+
+.status-page,
+.services-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+}
+
+.status-section {
+  margin-bottom: 16px;
+  background: rgba(26, 29, 35, 0.5);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid #1f2229;
+}
+
+.status-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6879e4;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(104, 121, 228, 0.15);
+}
+
+.status-section-body {
+  font-size: 13px;
+}
+
+.status-summary {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #1f2229;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.status-label {
+  color: #888;
+}
+
+.status-value {
+  color: #e0e0e0;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #1a1d23;
+  border-radius: 3px;
+  margin: 6px 0 10px;
+  overflow: hidden;
+}
+
+.status-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s;
+}
+
+/* Motor table */
+.status-motor-header {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(5, 1fr);
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  padding: 4px 0;
+  border-bottom: 1px solid #1a1d23;
+}
+
+.status-motor-row {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(5, 1fr);
+  gap: 4px;
+  font-size: 12px;
+  color: #ccc;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(26, 29, 35, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.motor-name {
+  color: #aaa;
+  font-weight: 500;
+}
+
+/* ── Services Page ── */
+.app-root.services-screen {
+  background: #0f1114;
+  overflow: hidden;
+}
+
+.services-loading {
+  padding: 32px 20px;
+  text-align: center;
+  color: #555;
+  font-size: 13px;
+}
+
+.services-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+}
+
+.svc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  background: rgba(26, 29, 35, 0.5);
+  border-radius: 8px;
+  border: 1px solid #1f2229;
+  position: relative;
+}
+
+.svc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.svc-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.svc-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.svc-status-dot.svc-status-running {
+  background: #42CF55;
+  box-shadow: 0 0 4px rgba(66, 207, 85, 0.4);
+}
+
+.svc-status-dot.svc-status-stopped {
+  background: #555;
+}
+
+.svc-name {
+  font-size: 13px;
+  color: #e0e0e0;
+  font-weight: 500;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.svc-shield {
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.svc-meta {
+  font-size: 11px;
+  color: #666;
+  display: flex;
+  gap: 8px;
+  padding-left: 15px;
+}
+
+.svc-status-running {
+  color: #42CF55;
+}
+
+.svc-status-stopped {
+  color: #888;
+}
+
+.svc-version {
+  color: #555;
+}
+
+.svc-toggle {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.svc-btn-stop {
+  background: rgba(255, 61, 61, 0.12);
+  color: #FF3D3D;
+  border: 1px solid rgba(255, 61, 61, 0.25);
+}
+
+.svc-btn-start {
+  background: rgba(66, 207, 85, 0.12);
+  color: #42CF55;
+  border: 1px solid rgba(66, 207, 85, 0.25);
+}
+
+.svc-btn-waiting {
+  background: rgba(255, 255, 255, 0.06);
+  color: #666;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+}
+
+.svc-toggle:active:not(:disabled) {
+  opacity: 0.7;
+}
+
+.svc-error {
+  position: absolute;
+  bottom: -2px;
+  right: 14px;
+  font-size: 11px;
+  color: #FCD335;
+  animation: toastFade 3s forwards;
+}
+
+/* ── Settings Page (hub-side duplicate of the WebView SettingBar) ── */
+.app-root.settings-screen {
+  background: #0f1114;
+  overflow: hidden;
+}
+
+.settings-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-category {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.settings-category-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6879e4;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 4px 4px 8px;
+}
+
+.settings-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: rgba(26, 29, 35, 0.5);
+  border-radius: 10px;
+  border: 1px solid #1f2229;
+}
+
+.settings-section-slider {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.settings-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.settings-desc {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.35;
+}
+
+.settings-slider-value {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #6879e4;
+  background: rgba(104, 121, 228, 0.1);
+  padding: 2px 10px;
+  border-radius: 10px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.settings-slider {
+  width: 100%;
+  accent-color: #6879e4;
+  height: 4px;
+}
+
+/* iOS-style toggle */
+.settings-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.settings-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #3a3d45;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.settings-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.18s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.settings-toggle input:checked + .settings-toggle-slider {
+  background: #6879e4;
+}
+
+.settings-toggle input:checked + .settings-toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* Stacked sections (header + child rows: Remote Control ID row). */
+.settings-section-stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+/* Muted state for category rows when global logging is disabled — the
+   per-category toggles are still clickable but visually de-emphasized
+   so it's clear the master kill-switch overrides them. */
+.settings-section-muted {
+  opacity: 0.45;
+}
+
+/* Remote Control ID readout row (under the toggle). */
+.settings-id-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(15, 17, 20, 0.6);
+  border-radius: 8px;
+  border: 1px solid #1f2229;
+}
+
+.settings-id-label {
+  font-size: 12px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.settings-id-value {
+  flex: 1;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  color: #6879e4;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-id-edit {
+  background: rgba(104, 121, 228, 0.15);
+  border: 1px solid rgba(104, 121, 228, 0.4);
+  color: #6879e4;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.settings-id-edit:hover {
+  background: rgba(104, 121, 228, 0.25);
+}
+
+.settings-id-edit:active {
+  transform: scale(0.97);
+}
+
+/* BT Remote — scrollable list of available BLE remotes / gamepads. */
+.settings-bt-remote-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;      /* ~4 rows of 36px + padding, scroll after */
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+}
+
+.settings-bt-remote-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(15, 17, 20, 0.55);
+  border: 1px solid #1f2229;
+  border-radius: 8px;
+  color: #ccc;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.settings-bt-remote-row:hover {
+  background: rgba(104, 121, 228, 0.08);
+  border-color: rgba(104, 121, 228, 0.3);
+}
+
+.settings-bt-remote-row[data-active="true"] {
+  background: rgba(66, 207, 85, 0.12);
+  border-color: rgba(66, 207, 85, 0.45);
+  color: #e0e0e0;
+}
+
+.settings-bt-remote-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.settings-bt-remote-label {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-bt-remote-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #42CF55;
+}
+
+html[data-theme="light"] .settings-bt-remote-row {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #d4d9e4;
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-bt-remote-row:hover {
+  background: rgba(74, 92, 207, 0.08);
+  border-color: rgba(74, 92, 207, 0.35);
+}
+
+html[data-theme="light"] .settings-bt-remote-row[data-active="true"] {
+  background: rgba(46, 160, 67, 0.12);
+  border-color: rgba(46, 160, 67, 0.5);
+}
+
+/* Settings modal (Change ID / Internet remote disclaimer). */
+.settings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.settings-modal-card {
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 12px;
+  padding: 20px 22px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.settings-modal-body {
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.settings-modal-input {
+  background: #0f1114;
+  border: 1px solid #2a2d35;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #e0e0e0;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.settings-modal-input:focus {
+  border-color: #6879e4;
+}
+
+.settings-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.settings-modal-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s;
+}
+
+.settings-modal-btn-primary {
+  background: #6879e4;
+  color: #fff;
+}
+
+.settings-modal-btn-primary:hover {
+  background: #7588e9;
+}
+
+.settings-modal-btn-secondary {
+  background: transparent;
+  color: #aaa;
+  border-color: #2a2d35;
+}
+
+.settings-modal-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Light-theme overrides — mirror status/services page rules. */
+html[data-theme="light"] .settings-page {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-section {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #d4d9e4;
+}
+
+html[data-theme="light"] .settings-title {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-desc {
+  color: #5a6170;
+}
+
+html[data-theme="light"] .settings-toggle-slider {
+  background: #c4cbd6;
+}
+
+html[data-theme="light"] .settings-id-row {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #d4d9e4;
+}
+
+html[data-theme="light"] .settings-id-label {
+  color: #5a6170;
+}
+
+html[data-theme="light"] .settings-id-value {
+  color: #4a5ccf;
+}
+
+html[data-theme="light"] .settings-modal-card {
+  background: #ffffff;
+  border-color: #d4d9e4;
+}
+
+html[data-theme="light"] .settings-modal-title {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-modal-body {
+  color: #5a6170;
+}
+
+html[data-theme="light"] .settings-modal-input {
+  background: #f3f5fa;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .settings-modal-btn-secondary {
+  color: #5a6170;
+  border-color: #c4cbd6;
+}
+
+html[data-theme="light"] .settings-modal-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* ── 3D LiDAR Mapping Page ── */
+.app-root.mapping-screen {
+  background: #0f1114;
+  overflow: hidden;
+}
+
+.mapping-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mapping-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.mapping-viewport {
+  flex: 1;
+  position: relative;
+  background: #1a1d23;
+}
+
+.mapping-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mapping-sidebar {
+  width: 380px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  background: #12141a;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+}
+
+.mapping-sidebar-left {
+  border-right: 1px solid #1f2229;
+}
+
+.mapping-sidebar-right {
+  border-left: 1px solid #1f2229;
+}
+
+.mapping-section {
+  margin-bottom: 14px;
+  background: rgba(26, 29, 35, 0.5);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #1f2229;
+}
+
+.mapping-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6879e4;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.mapping-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mapping-btn {
+  width: 100%;
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid #2a2d35;
+  background: #1a1d23;
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+}
+
+.mapping-btn:active {
+  background: #252830;
+}
+
+.mapping-btn-start {
+  border-color: rgba(66, 207, 85, 0.3);
+  color: #42CF55;
+}
+
+.mapping-btn-stop {
+  border-color: rgba(255, 61, 61, 0.3);
+  color: #FF3D3D;
+}
+
+.mapping-btn-warn {
+  border-color: rgba(252, 211, 53, 0.3);
+  color: #FCD335;
+}
+
+.mapping-btn-click-mode {
+  border-color: rgba(104, 121, 228, 0.3);
+  color: #6879e4;
+}
+
+.mapping-btn-click-mode.active {
+  background: rgba(104, 121, 228, 0.2);
+  border-color: #6879e4;
+  color: #fff;
+}
+
+.mapping-btn-highlight {
+  border-color: #FCD335 !important;
+  color: #FCD335 !important;
+  animation: mapping-pulse 1.5s ease-in-out 3;
+}
+
+@keyframes mapping-pulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 8px rgba(252, 211, 53, 0.4); }
+}
+
+.mapping-btn-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.mapping-btn-row .mapping-btn {
+  width: auto;
+}
+
+.mapping-map-id-row {
+  display: flex;
+  gap: 6px;
+}
+
+.mapping-input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #2a2d35;
+  background: #12141a;
+  color: #e0e0e0;
+  font-size: 12px;
+  outline: none;
+}
+
+.mapping-input:focus {
+  border-color: #6879e4;
+}
+
+/* Status stepper — horizontal flow under the page header */
+.mapping-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 18px;
+  background: #12141a;
+  border-bottom: 1px solid #1f2229;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.mapping-stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.mapping-stepper-active .mapping-stepper-label {
+  font-weight: 600;
+}
+
+.mapping-stepper-done {
+  color: #aaa;
+}
+
+.mapping-stepper-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.mapping-stepper-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  /* Most fonts render U+2192 (→) low; nudge up to vertically centre with the
+     dots/labels and use a heavier glyph that's clearly visible. */
+  transform: translateY(-1px);
+}
+
+.mapping-substate {
+  font-size: 11px;
+  color: #888;
+  padding: 4px 18px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  transition: color 0.2s;
+  background: #0f1114;
+  border-bottom: 1px solid #1f2229;
+}
+
+html[data-theme="light"] .mapping-stepper {
+  background: #f4f6fa;
+  border-bottom-color: #e2e6ee;
+}
+html[data-theme="light"] .mapping-stepper-step { color: #999; }
+html[data-theme="light"] .mapping-stepper-done { color: #555; }
+html[data-theme="light"] .mapping-stepper-arrow { color: #888; }
+html[data-theme="light"] .mapping-substate {
+  background: #ffffff;
+  border-bottom-color: #e2e6ee;
+}
+
+/* Server log */
+.mapping-log {
+  max-height: 160px;
+  overflow-y: auto;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  color: #888;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d35 transparent;
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+.mapping-log * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.mapping-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.mapping-log-topic {
+  margin: 0;
+  flex: 1;
+}
+
+/* Shared copy-button (see copy-button.ts). Icon-only, hover → cyan,
+   click → green checkmark, error → red flash. Used wherever a small
+   "copy this value" affordance is needed. */
+.copy-btn {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 1px solid #2a2d35;
+  color: #888;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.05s;
+  font-family: inherit;
+  line-height: 0;
+}
+.copy-btn:hover {
+  background: rgba(79, 195, 247, 0.12);
+  border-color: rgba(79, 195, 247, 0.4);
+  color: #4fc3f7;
+}
+.copy-btn:active {
+  transform: scale(0.94);
+}
+.copy-btn.copy-btn-success {
+  background: rgba(102, 187, 106, 0.18);
+  border-color: rgba(102, 187, 106, 0.55);
+  color: #66bb6a;
+}
+.copy-btn.copy-btn-error {
+  background: rgba(239, 83, 80, 0.18);
+  border-color: rgba(239, 83, 80, 0.55);
+  color: #ef5350;
+}
+
+html[data-theme="light"] .copy-btn {
+  border-color: #d4d9e4;
+  color: #6a7283;
+}
+html[data-theme="light"] .copy-btn:hover {
+  background: rgba(104, 121, 228, 0.10);
+  border-color: rgba(104, 121, 228, 0.4);
+  color: #6879e4;
+}
+html[data-theme="light"] .copy-btn.copy-btn-success {
+  color: #2e7d32;
+}
+
+.mapping-cmd-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mapping-cmd-label {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.mapping-cmd-labelline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.mapping-cmd-labelline .mapping-cmd-label {
+  margin-top: 0;
+}
+
+.mapping-info-btn {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #2a2d35;
+  background: transparent;
+  color: #6879e4;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 14px;
+  padding: 0;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.mapping-info-btn:hover {
+  background: rgba(104, 121, 228, 0.15);
+}
+
+.mapping-cmd-select {
+  font-family: inherit;
+}
+
+.mapping-cmd-payload {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  resize: vertical;
+  min-height: 36px;
+}
+
+.mapping-cmd-hint {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: #6879e4;
+  margin: 2px 0 6px;
+  word-break: break-all;
+}
+
+.mapping-log-line {
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(26, 29, 35, 0.5);
+  word-break: break-all;
+}
+
+/* Saved maps list */
+.mapping-saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mapping-empty {
+  color: #555;
+  font-size: 12px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.mapping-map-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: rgba(26, 29, 35, 0.6);
+  border-radius: 6px;
+  border: 1px solid #1f2229;
+}
+
+.mapping-map-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mapping-map-name {
+  font-size: 12px;
+  color: #e0e0e0;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapping-map-date {
+  font-size: 10px;
+  color: #555;
+}
+
+.mapping-map-id {
+  font-size: 10px;
+  color: #6879e4;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.mapping-map-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mapping-btn-sm {
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+  width: auto !important;
+}
+
+/* Non-blocking modal overlay */
+.mapping-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.mapping-modal {
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.mapping-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.mapping-modal-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.mapping-modal-input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+}
+
+.mapping-modal-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mapping-modal-btns .mapping-btn {
+  width: auto;
+  padding: 6px 16px;
+}
+
+/* Disabled section (greyed out when prerequisites not met) */
+.mapping-section-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  position: relative;
+}
+
+/* Navigation controls wrapper (inside section, can be independently disabled) */
+.mapping-nav-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+/* Mode tab buttons (Go to Goal / Patrol) */
+.mapping-btn-mode {
+  border-color: #2a2d35;
+  color: #666;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.mapping-btn-mode.active {
+  border-color: #6879e4;
+  color: #6879e4;
+  background: rgba(104, 121, 228, 0.1);
+}
+
+/* Navigation sub-panels */
+.mapping-nav-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Hint text shown when section is disabled */
+.mapping-hint {
+  font-size: 11px;
+  color: #FCD335;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  border-left: 2px solid #FCD335;
+  background: rgba(252, 211, 53, 0.05);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Localization status inline */
+.mapping-loc-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+/* Saved-maps header row: title on left, Import button on right */
+.mapping-saved-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #1f2229;
+  margin-bottom: 4px;
+}
+
+.mapping-saved-header .mapping-subsection-title {
+  border-bottom: none;
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.mapping-saved-header .mapping-btn {
+  width: auto;
+  padding: 4px 10px;
+}
+
+/* Sub-section label inside a section */
+.mapping-subsection-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 6px;
+  margin-bottom: 2px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #1f2229;
+}
+
+/* Toast notification */
+.mapping-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1a1d23;
+  color: #e0e0e0;
+  border: 1px solid #2a2d35;
+  border-left: 3px solid #42CF55;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 200;
+  max-width: 400px;
+  text-align: center;
+}
+
+.mapping-notification-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Account Manager ──
+   On wide screens, cap the content column so sections don't sprawl
+   edge-to-edge. Header + tab-bar stay full-width as chrome strips;
+   only the inner content blocks get centered + max-widthed. */
+.acct-page .page-content > * {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.acct-tab-bar {
+  display: flex;
+  border-bottom: 1px solid #1a1d23;
+  background: rgba(15, 17, 20, 0.95);
+  flex-shrink: 0;
+}
+.acct-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.acct-tab-btn:hover { color: #aaa; }
+.acct-tab-btn.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
+.acct-form { display: flex; flex-direction: column; gap: 0; }
+
+/* Logged-out Account Manager view: center the modal so it visually matches
+ * the Connect screen (same `.connection-modal` shell, vertically centered).
+ * The page-content host swaps to flex-center via this modifier class. */
+.page-content.acct-loggedout-content {
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+/* "— or paste access token —" separator inside the login modal. */
+.connection-panel .conn-or-sep {
+  font-size: 11px;
+  color: #555;
+  margin: 16px 0 8px;
+  text-align: center;
+}
+
+/* Secondary variant of .btn-connect — outlined, used for the token login
+ * button so the email-password button remains the primary action. */
+.btn-connect.btn-connect-secondary {
+  background: transparent;
+  border: 1px solid #333;
+  color: #aaa;
+}
+.btn-connect.btn-connect-secondary:hover {
+  border-color: #6879e4;
+  color: #6879e4;
+}
+html[data-theme="light"] .connection-panel .conn-or-sep {
+  color: #8b92a0;
+}
+html[data-theme="light"] .btn-connect.btn-connect-secondary {
+  border-color: #c4cbd6;
+  color: #5a6170;
+}
+html[data-theme="light"] .btn-connect.btn-connect-secondary:hover {
+  border-color: #4a5ccf;
+  color: #4a5ccf;
+}
+
+/* "Don't have an account? Create Account" row under the Login button. */
+.connection-panel .acct-create-row {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+}
+.connection-panel .acct-link-btn {
+  background: transparent;
+  border: none;
+  padding: 0 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6879e4;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.connection-panel .acct-link-btn:hover {
+  color: #8a99ff;
+  text-decoration: underline;
+}
+html[data-theme="light"] .connection-panel .acct-create-row { color: #5a6170; }
+html[data-theme="light"] .connection-panel .acct-link-btn { color: #4a5ccf; }
+html[data-theme="light"] .connection-panel .acct-link-btn:hover { color: #2a3cad; }
+
+/* Image-captcha pair: SVG box on the left, text input on the right.
+ * The SVG box is click-to-refresh — server consumes the captcha session
+ * on POST register/email, so refreshing has no cost. */
+.connection-panel .acct-captcha-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.connection-panel .acct-captcha-img {
+  flex: 0 0 110px;
+  height: 42px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.connection-panel .acct-captcha-img:hover {
+  border-color: #6879e4;
+}
+.connection-panel .acct-captcha-img svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.connection-panel .acct-captcha-row input {
+  flex: 1;
+  font-family: monospace;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-align: center;
+}
+html[data-theme="light"] .connection-panel .acct-captcha-img {
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .connection-panel .acct-captcha-img:hover {
+  border-color: #4a5ccf;
+}
+.acct-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 8px;
+}
+.acct-btn-primary { background: #4fc3f7; color: #000; }
+.acct-btn-primary:hover { background: #29b6f6; }
+.acct-btn-danger { background: #c62828; color: #fff; }
+.acct-btn-danger:hover { background: #e53935; }
+.acct-btn-secondary {
+  background: #1a1d23;
+  color: #4fc3f7;
+  border: 1px solid #2a2d35;
+}
+.acct-btn-secondary:hover { background: #21252e; }
+
+/* Reusable input/select/textarea styling for the Account + Debug tabs.
+   Inline layout (width / flex / padding) still works on top — this class
+   only owns colors so it can react to the theme. */
+.acct-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: #0a0c10;
+  border: 1px solid #2a2d35;
+  color: #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.acct-input-mono { font-family: monospace; color: #4fc3f7; }
+textarea.acct-input { color: #e0e0e0; }
+textarea.acct-input.acct-input-mono { color: #e0e0e0; }
+
+/* Label/value rows used in robot tiles + Info-tab + device-detail views.
+   The value defaults to a class color so it themes; callers can still pass
+   an inline color override (e.g. green '#66bb6a' for success values). */
+.acct-info-row {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+  align-items: center;
+}
+.acct-info-label {
+  color: #888;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.acct-info-value {
+  color: #e0e0e0;
+  word-break: break-all;
+  user-select: text;
+  cursor: text;
+  flex: 1;
+}
+.acct-info-mono {
+  font-family: monospace;
+  font-size: 12px;
+}
+/* File-input "Choose file" button — browsers render this as a native button
+   that ignores most CSS; ::file-selector-button is the standardized hook. */
+.acct-file-input::file-selector-button {
+  margin-right: 8px;
+  padding: 4px 10px;
+  background: #1a1d23;
+  color: #e0e0e0;
+  border: 1px solid #2a2d35;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Online / Offline / Unknown badge on the device tile in the Devices tab. */
+.acct-status-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.acct-status-online   { background: #1b5e20; color: #a5d6a7; }
+.acct-status-offline  { background: #333;    color: #888;    }
+.acct-status-unknown  { background: #222;    color: #555;    }
+
+/* BT popover adapter rows (dark defaults) */
+.bt-adapter-row {
+  border: 1px solid #2a2d35;
+  background: #0a0c10;
+  color: #aaa;
+}
+.bt-adapter-row-down { color: #555; }
+.bt-adapter-row-active {
+  border-color: #4fc3f7 !important;
+  background: rgba(79, 195, 247, 0.1) !important;
+  color: #4fc3f7 !important;
+}
+
+/* BT page content (dark default).
+   align-self overrides the parent's flex-column stretch so max-width
+   actually narrows the column; width:100% then fills up to that cap.
+   Flex column + safe center vertically centers the sections when the
+   viewport has room and falls back to top-aligned (scrollable) when
+   content is taller than the viewport. */
+.bt-page-content {
+  color: #ccc;
+  align-self: center;
+  width: 100%;
+  max-width: 560px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+}
+html[data-theme="light"] .bt-page-content {
+  color: #1a1d23;
+}
+/* Device rows + scan item inline backgrounds in the popover */
+html[data-theme="light"] .bt-page-content [style*="background:#0a0c10"],
+html[data-theme="light"] .bt-page-content [style*="background: #0a0c10"] {
+  background: #f5f7fb !important;
+  border-color: #d4d9e4 !important;
+}
+/* Controller body + button cells (setBtn dark backgrounds) */
+html[data-theme="light"] .bt-page-content [style*="background:#111318"],
+html[data-theme="light"] .bt-page-content [style*="background: #111318"] {
+  background: #ffffff !important;
+  border-color: #d4d9e4 !important;
+}
+html[data-theme="light"] .bt-page-content [style*="background:#080a0e"] {
+  background: #eef1f7 !important;
+  border-color: #d4d9e4 !important;
+}
+
+/* BT popover inputs / selects (dark defaults) */
+.bt-field {
+  background: #0a0c10;
+  border: 1px solid #2a2d35;
+  color: #e0e0e0;
+}
+.bt-field:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+/* BT popover device rows (dark defaults) */
+.bt-device-row {
+  background: #0a0c10;
+  border: 1px solid #1f2229;
+  color: #e0e0e0;
+}
+
+/* BT popover STA/AP mode toggle (dark defaults) */
+.bt-mode-wrap { border: 1px solid #2a2d35; }
+.bt-mode-btn { background: #0a0c10; color: #666; }
+.bt-mode-btn-active { background: #4fc3f7; color: #000; }
+
+/* BT popover buttons (dark theme defaults) */
+.bt-btn-primary { background: #4fc3f7; color: #000; border: none; }
+.bt-btn-primary:hover:not(:disabled) { background: #29b6f6; }
+.bt-btn-danger { background: #ef5350; color: #fff; border: none; }
+.bt-btn-danger:hover:not(:disabled) { background: #e53935; }
+.bt-btn-secondary { background: #2a2d35; color: #ccc; border: 1px solid #3a3d45; }
+.bt-btn-secondary:hover:not(:disabled) { background: #353942; color: #fff; }
+
+/* ─────────────────────────────────────────────────────────────
+   Light theme overrides
+   Applied via <html data-theme="light"> by ThemeManager
+   ─────────────────────────────────────────────────────────── */
+
+html[data-theme="light"] body {
+  background: #eef1f7;
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .app-root.hub-screen,
+html[data-theme="light"] .app-root.status-screen,
+html[data-theme="light"] .app-root.services-screen,
+html[data-theme="light"] .app-root.settings-screen {
+  background: #eef1f7;
+}
+/* Landing + Connection keep their bg images in both themes — only swap
+   the fallback color so it blends with the surrounding chrome on light.
+   The ::before layer carries the actual image; invert + hue-rotate flip
+   the dark art into a light-friendly version without psychedelic colors
+   (true invert alone would shift hue 180°; the rotate cancels that). */
+html[data-theme="light"] .app-root.landing-screen,
+html[data-theme="light"] .app-root.connection-screen {
+  background-color: #eef1f7;
+}
+html[data-theme="light"] .app-root.landing-screen::before,
+html[data-theme="light"] .app-root.connection-screen::before {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="light"] .landing-title {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .conn-remote-hint {
+  color: #4a5266;
+  background: rgba(79, 195, 247, 0.08);
+  border-color: rgba(79, 195, 247, 0.35);
+}
+
+/* Connection modal + hub container */
+html[data-theme="light"] .connection-modal {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(60, 75, 120, 0.12);
+  color: #1a1d23;
+  box-shadow: 0 4px 16px rgba(60, 75, 120, 0.12);
+}
+html[data-theme="light"] .hub-container {
+  background: #ffffff;
+  border: 1px solid #d4d9e4;
+  color: #1a1d23;
+  box-shadow: 0 4px 16px rgba(60, 75, 120, 0.08);
+}
+
+html[data-theme="light"] .hub-title,
+html[data-theme="light"] .nav-bar-title,
+html[data-theme="light"] .page-header h2 {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .hub-info {
+  color: #5a6170;
+}
+
+/* Hub / page sections */
+html[data-theme="light"] .status-section,
+html[data-theme="light"] .acct-card {
+  background: #ffffff;
+  border-color: #d4d9e4;
+}
+html[data-theme="light"] .status-section-title {
+  color: #3d4c8c;
+  border-bottom-color: rgba(104, 121, 228, 0.25);
+}
+
+/* Inputs */
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] input[type="password"],
+html[data-theme="light"] input[type="number"],
+html[data-theme="light"] select,
+html[data-theme="light"] textarea {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+
+/* Nav / Page headers */
+html[data-theme="light"] .nav-bar,
+html[data-theme="light"] .page-header {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid #d4d9e4;
+}
+/* The dark-mode scrim/text-shadow would muddy dark text on the white bar. */
+html[data-theme="light"] .nav-bar-title,
+html[data-theme="light"] .motor-temp-label,
+html[data-theme="light"] .net-type-label,
+html[data-theme="light"] .battery-text {
+  text-shadow: none;
+}
+html[data-theme="light"] .nav-divider {
+  background: #c4cbd6;
+}
+
+/* BT icon + theme toggle: lighter circle in light mode */
+html[data-theme="light"] .bt-status-icon > div,
+html[data-theme="light"] .theme-toggle-icon > div,
+html[data-theme="light"] .nav-bt-icon,
+html[data-theme="light"] .nav-theme-icon,
+html[data-theme="light"] .nav-circle-icon {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #c4cbd6 !important;
+  box-shadow: 0 2px 6px rgba(60, 75, 120, 0.15);
+}
+
+/* Account page / status page text */
+html[data-theme="light"] .acct-page,
+html[data-theme="light"] .status-page,
+html[data-theme="light"] .services-page {
+  color: #1a1d23;
+}
+
+/* Account-page tab bar (Devices / Info / Account / Debug) — light */
+html[data-theme="light"] .acct-tab-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: #d4d9e4;
+}
+html[data-theme="light"] .acct-tab-btn         { color: #5a6170; }
+html[data-theme="light"] .acct-tab-btn:hover   { color: #1a1d23; }
+html[data-theme="light"] .acct-tab-btn.active  { color: #4a5ccf; border-bottom-color: #4a5ccf; }
+
+/* Account / Debug tab inputs — light */
+html[data-theme="light"] .acct-input {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+html[data-theme="light"] textarea.acct-input,
+html[data-theme="light"] textarea.acct-input.acct-input-mono { color: #1a1d23; }
+html[data-theme="light"] .acct-input.acct-input-mono { color: #4a5ccf; }
+html[data-theme="light"] .acct-input::placeholder { color: #8b92a0; }
+
+/* Secondary button (Details / Share / etc.) — light */
+html[data-theme="light"] .acct-btn-secondary {
+  background: #ffffff;
+  color: #4a5ccf;
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .acct-btn-secondary:hover { background: #eef1f7; }
+
+/* Device-tile online/offline/unknown badge — light */
+html[data-theme="light"] .acct-status-online  { background: #d8f0d6; color: #1f6b1f; }
+html[data-theme="light"] .acct-status-offline { background: #e6e9ef; color: #5a6170; }
+html[data-theme="light"] .acct-status-unknown { background: #eef0f5; color: #8b92a0; }
+
+/* Hub WebRTC-connect card (Remote mode) — light */
+html[data-theme="light"] .hub-remote-section {
+  background: #f3f5f9;
+  border-color: #d4d9e4;
+}
+
+/* Robot-tile / Info-tab key:value rows — light. Bumps the value text from
+   the dark-theme near-white (#e0e0e0) to the standard light body color so
+   SN / Series / Model / version numbers etc. become legible on white. */
+html[data-theme="light"] .acct-info-label { color: #5a6170; }
+html[data-theme="light"] .acct-info-value { color: #1a1d23; }
+
+/* G1 motor callouts — value text flanking the humanoid PNG. */
+.g1-motor-callout { color: #e0e0e0; }
+html[data-theme="light"] .g1-motor-callout { color: #1a1d23; }
+
+/* File-input "Choose file" button — light */
+html[data-theme="light"] .acct-file-input::file-selector-button {
+  background: #ffffff;
+  color: #4a5ccf;
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .acct-file-input::file-selector-button:hover {
+  background: #eef1f7;
+}
+
+/* Connection-panel heading — light */
+html[data-theme="light"] .connection-panel h2 { color: #1a1d23; }
+html[data-theme="light"] .connection-panel .conn-title { color: #1a1d23; }
+html[data-theme="light"] .connection-panel .conn-back-link { color: #5a6170; }
+html[data-theme="light"] .connection-panel .conn-back-link:hover { color: #4a5ccf; }
+
+/* BT popover inputs / selects / device rows (light) */
+html[data-theme="light"] .bt-field {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+html[data-theme="light"] .bt-field:focus {
+  border-color: #4fc3f7;
+}
+html[data-theme="light"] .bt-device-row {
+  background: #ffffff;
+  border-color: #d4d9e4;
+  color: #1a1d23;
+}
+
+/* STA/AP mode toggle in light theme */
+html[data-theme="light"] .bt-mode-wrap { border-color: #c4cbd6; }
+html[data-theme="light"] .bt-mode-btn { background: #ffffff; color: #5a6170; }
+html[data-theme="light"] .bt-mode-btn-active { background: #4fc3f7; color: #000; }
+
+/* Joystick base in light theme — match the action-bar's translucent dark
+   pill exactly (rgba(17,17,39,0.6) + blur). Apply directly to the box
+   so backdrop-filter renders correctly (pseudo-elements don't always
+   support it). The original joystick_bg.png is opaque dark-navy, so we
+   hide it and draw light grey chevrons via ::after to keep direction
+   arrows visible on our translucent backdrop. */
+html[data-theme="light"] .joystick-box {
+  background: rgba(17, 17, 39, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50%;
+}
+html[data-theme="light"] .joystick-box::before {
+  display: none;
+}
+html[data-theme="light"] .joystick-bg {
+  display: none;
+}
+html[data-theme="light"] .joystick-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23b0b3bb' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='45,14 50,8 55,14'/><polyline points='45,92 50,86 55,92'/><polyline points='14,45 8,50 14,55'/><polyline points='86,45 92,50 86,55'/></svg>");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Nav-bar back button + wifi icon: hardcoded white/grey sprites look faded
+   on the light nav-bar. Invert them so they become dark grey. */
+html[data-theme="light"] .back-btn img,
+html[data-theme="light"] .page-back-btn img,
+html[data-theme="light"] .wifi-icon {
+  filter: brightness(0) opacity(0.7);
+}
+
+/* Scan button (bt-btn-secondary) — force the light styling with !important
+   in case any inline style leaks through */
+html[data-theme="light"] .bt-btn-secondary {
+  background: #ffffff !important;
+  color: #1a1d23 !important;
+  border: 1px solid #c4cbd6 !important;
+}
+
+/* Connection-panel Scan button (the IP-row scan on the Local Network tab) */
+html[data-theme="light"] .btn-scan {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #4a5ccf;
+}
+html[data-theme="light"] .btn-scan:hover:not(:disabled) {
+  background: #eef1f7;
+  border-color: #6879e4;
+}
+
+/* BT popover adapter rows (light) */
+html[data-theme="light"] .bt-adapter-row {
+  background: #ffffff;
+  border-color: #d4d9e4;
+  color: #1a1d23;
+}
+html[data-theme="light"] .bt-adapter-row-down {
+  color: #8b92a0;
+}
+html[data-theme="light"] .bt-adapter-row-active {
+  border-color: #4fc3f7 !important;
+  background: rgba(79, 195, 247, 0.12) !important;
+  color: #1d5aa0 !important;
+}
+
+/* Status page (charge bar + greys) */
+html[data-theme="light"] .status-bar-track {
+  background: #d4d9e4;
+}
+html[data-theme="light"] .status-label {
+  color: #5a6170;
+}
+html[data-theme="light"] .status-value {
+  color: #1a1d23;
+}
+html[data-theme="light"] .status-motor-header {
+  color: #5a6170;
+  border-bottom-color: #d4d9e4;
+}
+html[data-theme="light"] .status-motor-row {
+  color: #2a2d35;
+  border-bottom-color: #e4e7ef;
+}
+html[data-theme="light"] .motor-name {
+  color: #1a1d23;
+}
+
+/* Services page */
+html[data-theme="light"] .app-root.services-screen {
+  background: #eef1f7;
+}
+html[data-theme="light"] .services-loading {
+  color: #8b92a0;
+}
+html[data-theme="light"] .svc-row {
+  background: #ffffff;
+  border-color: #d4d9e4;
+  box-shadow: 0 1px 3px rgba(60, 75, 120, 0.05);
+}
+html[data-theme="light"] .svc-name {
+  color: #1a1d23;
+}
+html[data-theme="light"] .svc-meta {
+  color: #5a6170;
+}
+html[data-theme="light"] .svc-status-stopped {
+  color: #8b92a0;
+}
+html[data-theme="light"] .svc-version {
+  color: #8b92a0;
+}
+html[data-theme="light"] .svc-status-dot.svc-status-stopped {
+  background: #b0b5c0;
+}
+html[data-theme="light"] .svc-btn-waiting {
+  background: #eef1f7;
+  color: #8b92a0;
+  border-color: #d4d9e4;
+}
+
+/* Push the page-header badge away from the floating top-right icons.
+   The cluster (BT, theme, account, errors) currently spans ~182px from the
+   viewport edge; reserve a hair more so the count chip never collides. */
+.page-header-badge {
+  margin-right: 195px;
+}
+
+/* Battery text is hardcoded white — force a readable color on light bg
+   with a subtle shadow so it remains legible over any fill color */
+html[data-theme="light"] .battery-text {
+  color: #1a1d23;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+/* Battery fill-box border also needs to be visible on light bg */
+html[data-theme="light"] .battery-icon .battery-fill-box {
+  border-color: #5a6170;
+  background: rgba(90, 97, 112, 0.15);
+}
+html[data-theme="light"] .battery-icon .battery-fill-box::after {
+  background: #5a6170;
+}
+/* Motor-temp & network labels (use hardcoded grey that's too light on white) */
+html[data-theme="light"] .motor-temp-label,
+html[data-theme="light"] .net-type-label {
+  color: #1a1d23 !important;
+}
+
+/* Plain text elements previously on dark bg */
+html[data-theme="light"] .page-content {
+  color: #1a1d23;
+}
+
+/* Hub buttons (Webview, Status, Services, Connect) */
+html[data-theme="light"] .hub-btn {
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .hub-btn-primary {
+  background: linear-gradient(135deg, #ffffff, #e8ecf5);
+  color: #4a5ccf;
+  border-color: #a8b4e0;
+}
+html[data-theme="light"] .hub-btn-primary:hover {
+  background: linear-gradient(135deg, #e8ecf5, #d4dbf0);
+  border-color: #6879e4;
+}
+html[data-theme="light"] .hub-btn-secondary {
+  background: #ffffff;
+  color: #5a6170;
+  border-color: #c4cbd6;
+}
+html[data-theme="light"] .hub-btn-secondary:hover {
+  background: #f5f7fb;
+  color: #1a1d23;
+  border-color: #8090b0;
+}
+
+/* Joystick base shadow — very light tint in light mode */
+html[data-theme="light"] .joystick-box::before {
+  background: linear-gradient(179deg, #8090b0, rgba(128, 144, 176, 0));
+  opacity: 0.15;
+}
+
+/* Setting bar (Radar / LiDAR / Volume / Light / Relay) */
+html[data-theme="light"] .setting-bar {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(60, 75, 120, 0.15);
+  border: 1px solid #c4cbd6;
+}
+html[data-theme="light"] .setting-btn:active {
+  background: rgba(104, 121, 228, 0.15);
+}
+/* Setting-bar icons (lamp, volume, radar, relay SVG) are designed for dark bg.
+   Darken them in light mode so they stay readable. */
+html[data-theme="light"] .setting-btn img {
+  filter: brightness(0) opacity(0.7);
+}
+html[data-theme="light"] .setting-btn svg {
+  stroke: #1a1d23 !important;
+}
+html[data-theme="light"] .setting-btn svg circle[fill] {
+  fill: #1a1d23 !important;
+}
+
+html[data-theme="light"] .bt-btn-secondary:hover:not(:disabled) {
+  background: #eef1f7 !important;
+  border-color: #6879e4 !important;
+  color: #1a1d23 !important;
+}
+
+/* Emergency stop stays red in both themes — it's a hazard indicator */
+
+/* ── 3D LiDAR Mapping page — light theme ────────────────────────────────── */
+
+html[data-theme="light"] .app-root.mapping-screen {
+  background: #f4f6fa;
+}
+
+html[data-theme="light"] .mapping-viewport {
+  background: #eef1f7;
+}
+
+html[data-theme="light"] .mapping-sidebar {
+  background: #f4f6fa;
+}
+
+html[data-theme="light"] .mapping-sidebar-left {
+  border-right-color: #e2e6ee;
+}
+
+html[data-theme="light"] .mapping-sidebar-right {
+  border-left-color: #e2e6ee;
+}
+
+html[data-theme="light"] .mapping-section {
+  background: #ffffff;
+  border-color: #e2e6ee;
+}
+
+html[data-theme="light"] .mapping-section-title {
+  color: #4856b8;
+}
+
+html[data-theme="light"] .mapping-subsection-title {
+  color: #5a6075;
+  border-bottom-color: #e2e6ee;
+}
+
+html[data-theme="light"] .mapping-btn {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .mapping-btn:hover:not(:disabled) {
+  background: #eef1f7;
+  border-color: #6879e4;
+}
+
+html[data-theme="light"] .mapping-btn-start {
+  background: linear-gradient(230deg, #6879e4, #495abf);
+  color: #fff;
+  border-color: transparent;
+}
+
+html[data-theme="light"] .mapping-btn-stop {
+  background: #ffe6e6;
+  border-color: #ef4a4a;
+  color: #c0392b;
+}
+
+html[data-theme="light"] .mapping-btn-warn {
+  background: #fff5d6;
+  border-color: #d49b00;
+  color: #8b6700;
+}
+
+html[data-theme="light"] .mapping-btn-mode {
+  background: transparent;
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-btn-mode.active {
+  background: rgba(104, 121, 228, 0.15);
+  color: #4856b8;
+  border-color: #6879e4;
+}
+
+html[data-theme="light"] .mapping-btn-click-mode.active {
+  background: rgba(104, 121, 228, 0.15);
+  color: #4856b8;
+  border-color: #6879e4;
+}
+
+html[data-theme="light"] .mapping-input {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .mapping-input:focus {
+  border-color: #6879e4;
+}
+
+html[data-theme="light"] .mapping-cmd-label {
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-cmd-hint {
+  color: #4856b8;
+}
+
+html[data-theme="light"] .mapping-info-btn {
+  border-color: #c4cbd6;
+  color: #4856b8;
+}
+
+html[data-theme="light"] .mapping-info-btn:hover {
+  background: rgba(104, 121, 228, 0.12);
+}
+
+html[data-theme="light"] .mapping-log {
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-log-line {
+  border-bottom-color: #eef1f7;
+}
+
+html[data-theme="light"] .mapping-saved-list {
+  /* uses .mapping-map-row backgrounds */
+}
+
+html[data-theme="light"] .mapping-empty {
+  color: #888;
+}
+
+html[data-theme="light"] .mapping-map-row {
+  background: #ffffff;
+  border-color: #e2e6ee;
+}
+
+html[data-theme="light"] .mapping-map-name {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .mapping-map-date {
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-map-id {
+  color: #4856b8;
+}
+
+html[data-theme="light"] .mapping-modal {
+  background: #ffffff;
+  border-color: #c4cbd6;
+}
+
+html[data-theme="light"] .mapping-modal-title {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .mapping-modal-label {
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-hint {
+  color: #5a6075;
+}
+
+html[data-theme="light"] .mapping-loc-status {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .mapping-notification {
+  background: #ffffff;
+  border-color: #c4cbd6;
+  color: #1a1d23;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Errors Page ── */
+.app-root.errors-screen {
+  background: #0f1114;
+  overflow: hidden;
+}
+
+.errors-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.errors-empty {
+  padding: 64px 20px;
+  text-align: center;
+  color: #555;
+  font-size: 13px;
+}
+
+.errors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.errors-section {
+  background: rgba(26, 29, 35, 0.5);
+  border: 1px solid #1f2229;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.errors-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255, 61, 61, 0.06);
+  border-bottom: 1px solid rgba(255, 61, 61, 0.18);
+}
+
+.errors-section-source {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF6B6B;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.errors-section-code {
+  font-family: monospace;
+  font-size: 11px;
+  color: #888;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.errors-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(26, 29, 35, 0.6);
+  gap: 12px;
+}
+
+.errors-row:first-of-type {
+  border-top: none;
+}
+
+.errors-row-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.errors-row-label {
+  font-size: 13px;
+  color: #e0e0e0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.errors-row-code {
+  font-family: monospace;
+  font-size: 11px;
+  color: #b0b3bb;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+.errors-row-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.errors-row-time-abs {
+  font-size: 12px;
+  color: #c8ccd4;
+  font-family: monospace;
+}
+
+.errors-row-time-rel {
+  font-size: 10.5px;
+  color: #6a6f7a;
+}
+
+/* Light theme */
+html[data-theme="light"] .app-root.errors-screen {
+  background: #f4f6fb;
+}
+
+html[data-theme="light"] .errors-page {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .errors-empty {
+  color: #8b92a0;
+}
+
+html[data-theme="light"] .errors-section {
+  background: #ffffff;
+  border-color: #d4d9e4;
+}
+
+html[data-theme="light"] .errors-section-heading {
+  background: rgba(255, 61, 61, 0.06);
+  border-bottom-color: rgba(255, 61, 61, 0.22);
+}
+
+html[data-theme="light"] .errors-row {
+  border-top-color: #e8ebf2;
+}
+
+html[data-theme="light"] .errors-row-label {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .errors-row-code {
+  color: #5a6075;
+  background: #f1f3f8;
+  border-color: #d4d9e4;
+}
+
+html[data-theme="light"] .errors-row-time-abs {
+  color: #1a1d23;
+}
+
+html[data-theme="light"] .errors-row-time-rel {
+  color: #8b92a0;
+}
+

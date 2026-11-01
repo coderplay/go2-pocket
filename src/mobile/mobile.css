@@ -1,0 +1,206 @@
+/* One visual system for Home, Drive and every settings page. */
+[hidden] {display:none!important}
+.pocket-network-help {white-space:pre-line;font-size:17px!important;line-height:1.55;color:var(--pocket-muted)!important;margin:18px 0;overflow-wrap:anywhere}
+.pocket-setup-ap {width:100%;min-height:56px;margin:0 0 12px}
+.pocket-password-toggle {display:flex;align-items:center;gap:12px;margin:18px 0;font-size:17px!important;line-height:1.45;cursor:pointer}
+.pocket-password-toggle input {flex:0 0 26px;width:26px!important;height:26px;min-height:26px!important;accent-color:var(--pocket-accent)}
+.pocket-diagnostics {margin:20px 0;color:var(--pocket-muted);font-size:16px;overflow-wrap:anywhere}
+.pocket-diagnostics summary {min-height:48px;cursor:pointer;padding:12px 0;font-size:17px}
+.pocket-unlock {padding:14px 16px;border:1px solid var(--pocket-line);border-radius:18px;background:var(--pocket-surface);margin:16px 0}
+.pocket-unlock .pocket-network-help {margin:0 0 12px}
+.pocket-unlock input {width:100%;min-width:0;box-sizing:border-box}
+.pocket-device-id {display:none}
+:root {
+  --pocket-bg:#f5f6f2; --pocket-surface:#ffffff; --pocket-soft:#e9eeeb;
+  --pocket-ink:#152f38; --pocket-muted:#4d6268; --pocket-line:#d6dfdc;
+  --pocket-accent:#1d4d53; --pocket-on-accent:#ffffff; --pocket-danger:#b72e30;
+  --pocket-danger-soft:#fff0ed; --pocket-shadow:0 12px 35px #17383c0a;
+  --tab-space:calc(88px + env(safe-area-inset-bottom));
+  font-synthesis:none; font-size:18px; -webkit-text-size-adjust:100%;
+}
+html[data-theme=dark] {
+  --pocket-bg:#12232b; --pocket-surface:#1c333c; --pocket-soft:#28434c;
+  --pocket-ink:#f0f5ef; --pocket-muted:#bdcfd0; --pocket-line:#46616a;
+  --pocket-accent:#bdddcf; --pocket-on-accent:#13352e;
+  --pocket-danger:#ffb6af; --pocket-danger-soft:#4a272c;
+}
+html,body {height:100%;overscroll-behavior:none}
+body {background:var(--pocket-bg)!important;color:var(--pocket-ink);touch-action:pan-y pinch-zoom;-webkit-font-smoothing:antialiased}
+#app {height:calc(100dvh - var(--tab-space));width:100%;padding-top:env(safe-area-inset-top)}
+.app-root {height:100%;width:100%;min-width:0!important;background:var(--pocket-bg)!important;color:var(--pocket-ink)!important}
+.app-root.landing-screen,.app-root.hub-screen,.tools-screen {display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.app-root::before {display:none!important}
+button,input,select,textarea {font:inherit}button {cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:disabled {cursor:not-allowed;opacity:.55}input,textarea {user-select:text!important;-webkit-user-select:text!important;font-size:18px!important}
+button:focus-visible,a:focus-visible,summary:focus-visible {outline:4px solid #c18e38;outline-offset:4px}
+.pocket-home,.pocket-tools {max-width:1120px;margin:0 auto;padding:26px 24px 36px;color:var(--pocket-ink)}
+.pocket-header {display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:34px}
+.pocket-brand {display:flex;gap:12px;align-items:center;font-size:23px;letter-spacing:-.8px;white-space:nowrap}.pocket-brand b {font-weight:700}
+.pocket-brand small {display:block;margin-top:4px;font-size:14px;letter-spacing:0;color:var(--pocket-muted)}
+.pocket-logo {display:grid;place-items:center;border-radius:16px;width:52px;height:52px;flex-shrink:0;background:var(--pocket-accent);color:var(--pocket-on-accent)}.pocket-logo svg {display:block;width:38px;height:38px}
+.pocket-avatar {border:1px solid var(--pocket-line);border-radius:16px;background:var(--pocket-surface);color:var(--pocket-ink);min-height:56px;min-width:56px;padding:13px;display:flex;align-items:center;gap:8px}.pocket-avatar svg {width:28px;height:28px}.pocket-avatar span {font-size:16px}
+.pocket-eyebrow {font-size:13px;font-weight:700;letter-spacing:1.7px;color:var(--pocket-muted);line-height:1.5;margin-bottom:12px}
+.pocket-intro {margin-bottom:28px}.pocket-intro h1 {font-size:clamp(42px,6vw,70px);letter-spacing:-2.5px;font-weight:650;line-height:1.02;margin:0}.pocket-intro h1 span {color:var(--pocket-accent)}.pocket-intro p {font-size:18px;line-height:1.5;color:var(--pocket-muted);margin-top:18px}
+.pocket-home-grid {display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:38px;align-items:start}
+.pocket-main-card,.pocket-shortcuts {min-width:0}
+.pocket-robot-card {height:330px;position:relative;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 60% 50%,#48616c,#1c3540 65%,#122731);box-shadow:var(--pocket-shadow)}
+.pocket-robot-top {position:absolute;z-index:2;top:22px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center;font-size:14px;letter-spacing:2px;color:#e7eeeb}
+.pocket-status {display:flex;align-items:center;gap:8px;letter-spacing:0;font-size:14px;font-weight:600;background:#1a333ce6;padding:9px 12px;border:1px solid #a9bec050;border-radius:24px;color:#f5f8f5}.pocket-status i {width:8px;height:8px;background:#d9e2df;border-radius:50%}.pocket-status.online i {background:#a6e3ac}
+.pocket-hero-art {position:absolute;inset:0;background:url('/sprites/bg_main_leading.png') 50% 54%/112% auto no-repeat;mix-blend-mode:luminosity}
+.pocket-robot-bottom {position:absolute;bottom:20px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:flex-end;color:white}.pocket-robot-bottom small {font-size:13px;letter-spacing:1.5px;color:#d3dedc}.pocket-robot-bottom strong {display:block;font-size:34px;font-weight:600;letter-spacing:-1px;line-height:1.1;margin-top:6px}.pocket-edition {font-size:25px;font-weight:400;color:#d7e6e4}
+.pocket-primary {width:100%;min-height:82px;border:0;border-radius:20px;background:var(--pocket-accent);color:var(--pocket-on-accent);display:flex;align-items:center;gap:16px;padding:17px 22px;margin-top:16px;text-align:left;box-shadow:var(--pocket-shadow)}
+.pocket-primary>svg {width:36px;height:36px;flex-shrink:0}.pocket-primary>svg:last-child {margin-left:auto;width:26px;height:26px}.pocket-primary span {font-size:23px;font-weight:650;line-height:1.2}.pocket-primary small {display:block;font-size:15px;font-weight:450;line-height:1.4;margin-top:5px}
+.pocket-telemetry {display:grid;grid-template-columns:1fr 1fr;padding:24px 4px;gap:24px}.pocket-telemetry>div+div {border-left:1px solid var(--pocket-line);padding-left:24px}.pocket-telemetry small {font-size:15px;color:var(--pocket-muted)}.pocket-telemetry strong {display:block;font-size:22px;font-weight:600;margin-top:7px}.pocket-telemetry em {font-style:normal;font-size:18px}
+.pocket-section-heading {display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:18px}.pocket-section-heading h2 {font-size:25px;font-weight:650;letter-spacing:-.6px}.pocket-section-heading button {border:0;background:none;display:flex;gap:7px;align-items:center;color:var(--pocket-accent);font-size:16px;min-height:52px;padding:5px}.pocket-section-heading svg {width:22px;height:22px}
+.pocket-feature-grid {display:grid;grid-template-columns:1fr 1fr;gap:14px}.pocket-feature-grid button {position:relative;border:1px solid var(--pocket-line);background:var(--pocket-surface);border-radius:24px;text-align:left;color:var(--pocket-ink);padding:22px 20px;min-height:197px;box-shadow:var(--pocket-shadow)}
+.feature-icon {display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:18px}.feature-icon svg {width:34px;height:34px}.mint {background:#e4ede7;color:#38664b}.peach {background:#f6e6d7;color:#915125}.lilac {background:#eae7f0;color:#65567b}.sand {background:#ebecd9;color:#5a6737}
+.pocket-feature-grid strong {display:block;font-size:20px;font-weight:650;letter-spacing:-.4px;line-height:1.2;margin-top:20px}.pocket-feature-grid small {display:block;font-size:15px;color:var(--pocket-muted);line-height:1.45;margin-top:8px}.pocket-feature-grid button>svg {position:absolute;right:17px;top:24px;width:23px;height:23px;color:var(--pocket-muted)}
+.pocket-home-note {font-size:16px;line-height:1.5;color:var(--pocket-muted);margin:24px 0}.pocket-preview-link {border:1px solid var(--pocket-line);border-radius:16px;background:var(--pocket-surface);color:var(--pocket-accent);min-height:56px;width:100%;font-size:17px;padding:12px}
+.pocket-tabbar {height:var(--tab-space);padding:10px 18px calc(10px + env(safe-area-inset-bottom));position:fixed;bottom:0;left:0;right:0;background:var(--pocket-surface);border-top:1px solid var(--pocket-line);z-index:9500;display:flex;justify-content:center;gap:16px}
+.pocket-tabbar button {flex:1;max-width:180px;min-height:64px;border:0;border-radius:18px;background:none;color:var(--pocket-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:16px;font-weight:550}.pocket-tabbar svg {width:30px;height:30px}.pocket-tabbar .selected {background:var(--pocket-soft);color:var(--pocket-ink);font-weight:750}
+.pocket-tools {max-width:820px;padding-top:36px}.pocket-tools h1 {font-size:40px;font-weight:650;letter-spacing:-1.5px;line-height:1.1}.pocket-subtitle {font-size:18px;line-height:1.5;color:var(--pocket-muted);margin:18px 0 32px}.pocket-tool-section>h2,.pocket-advanced>summary {font-size:23px;font-weight:650;line-height:1.4;margin:26px 0 14px}.pocket-advanced>summary {cursor:pointer;min-height:56px;display:list-item;list-style-position:inside;padding:10px 0}
+.pocket-tool-list {border:1px solid var(--pocket-line);border-radius:24px;overflow:hidden;background:var(--pocket-surface)}.pocket-tool-row {display:flex;gap:18px;align-items:center;width:100%;min-height:104px;border:0;border-bottom:1px solid var(--pocket-line);background:transparent;color:var(--pocket-ink);padding:22px;text-align:left}.pocket-tool-row:last-child {border-bottom:0}.pocket-tool-row>svg {width:36px;height:36px;flex-shrink:0}.pocket-tool-row>svg:last-child {margin-left:auto;width:24px;height:24px;color:var(--pocket-muted)}.pocket-tool-row strong {font-size:21px;font-weight:600;line-height:1.3}.pocket-tool-row small {display:block;font-size:16px;line-height:1.45;color:var(--pocket-muted);margin-top:6px}
+.pocket-preview-banner {position:fixed;top:0;left:0;right:0;z-index:9999;background:#efdfbe;color:#4c3a1b;padding:9px 12px;text-align:center;font-size:14px;line-height:1.4}.pocket-preview-banner a {color:inherit;margin-left:14px;font-weight:700;min-height:44px}.pocket-preview-banner[hidden] {display:none}body:has(.pocket-preview-banner:not([hidden])) #app {padding-top:calc(40px + env(safe-area-inset-top))}
+.bt-status-icon,.account-status-icon,.theme-toggle,.theme-toggle-icon,.errors-badge-floating {display:none!important}
+/* Shared page surfaces override the upstream desktop and inline palettes. */
+html body :is(.page-header,.settings-drawer-header) {background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border-color:var(--pocket-line)!important;min-height:80px;padding:16px 24px;height:auto;gap:14px;flex-wrap:wrap}
+html body :is(.page-header,.settings-drawer-header) h2 {font-size:27px!important;font-weight:650;color:var(--pocket-ink)!important;white-space:normal;line-height:1.2}
+html body :is(.status-page,.services-page,.settings-page,.bt-page,.acct-page,.errors-page,.mapping-page,.app-settings-page,.page-content,.settings-drawer-panel) {background:var(--pocket-bg)!important;color:var(--pocket-ink)!important;max-width:100%;min-height:0}
+:is(.status-page,.services-page,.settings-page,.bt-page,.acct-page,.errors-page,.mapping-page,.app-settings-page) {height:100%;overflow:auto}
+.page-content {padding:24px;overflow:auto;touch-action:pan-y pinch-zoom;min-height:0;font-size:18px;line-height:1.5}
+html body :is(.settings-section,.status-section,.svc-row,.bt-device-row,.bt-adapter-row,.mapping-section,.aud-item,.aud-player,.mapping-map-row,.acct-token-box,.acct-info-card,.mapping-modal,.aud-modal) {background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border:1px solid var(--pocket-line)!important;border-radius:20px;box-shadow:none;padding:20px}
+html body :is(.settings-category-title,.status-section-title,.mapping-section-title,.mapping-modal-title,.aud-modal-title) {color:var(--pocket-ink)!important;font-size:22px!important;font-weight:650;line-height:1.3;margin-bottom:14px}
+html body :is(.settings-title,.status-value,.svc-name,.bt-device-name,.aud-name,.acct-info-value,.mapping-map-name) {color:var(--pocket-ink)!important;font-size:19px!important;line-height:1.4}
+html body :is(.settings-desc,.status-label,.svc-meta,.svc-version,.aud-datetime,.aud-empty,.mapping-hint,.mapping-empty,.mapping-map-date,.mapping-map-id,.acct-info-label,.status,.conn-remote-hint) {color:var(--pocket-muted)!important;font-size:16px!important;line-height:1.5}
+html body :is(input:not([type=checkbox]):not([type=range]),select,textarea,.bt-field,.mapping-input,.acct-input,.aud-modal-input) {min-height:56px;font-size:18px!important;border:1px solid var(--pocket-line)!important;border-radius:12px!important;background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;padding:12px;max-width:100%;min-width:0}
+html body :is(.page-content,.connection-panel,.mapping-sidebar,.settings-drawer-body) button {min-height:52px;font-size:18px!important;border-radius:12px;line-height:1.3}
+html body :is(.acct-btn,.bt-btn,.mapping-btn,.svc-btn,.btn-scan,.btn-connect,.auth-tab,.cloud-prefs-pill,.aud-modal-confirm) {color:var(--pocket-ink)!important;background:var(--pocket-surface)!important;border-color:var(--pocket-line)!important;padding:12px 18px}
+html body :is(.btn-connect,.acct-btn-primary,.bt-btn-primary,.mapping-btn-start,.cloud-prefs-pill.active,.auth-tab.active,.bt-mode-btn-active) {background:var(--pocket-accent)!important;color:var(--pocket-on-accent)!important;border-color:var(--pocket-accent)!important}
+html body :is(.acct-btn-danger,.mapping-btn-stop,.aud-menu-del) {background:var(--pocket-danger-soft)!important;color:var(--pocket-danger)!important;border-color:var(--pocket-danger)!important}
+html body :is(.page-content,.connection-panel) :is([style*="color:#fff"],[style*="color: #fff"],[style*="color:#ccc"],[style*="color:#aaa"],[style*="color:#888"],[style*="color:#666"],[style*="color:#555"]) {color:var(--pocket-muted)!important}
+html body :is(.page-content,.connection-panel) :is([style*="font-size:10px"],[style*="font-size:11px"],[style*="font-size:12px"],[style*="font-size:13px"],[style*="font-size:14px"]) {font-size:16px!important;line-height:1.5!important}
+html body :is(.page-content,.connection-panel) :is([style*="background:#0"],[style*="background:#1"],[style*="background:#2"]) {background:var(--pocket-surface)!important;border-color:var(--pocket-line)!important;color:var(--pocket-ink)!important}
+.page-back-btn {min-width:56px;min-height:56px;padding:15px;border-radius:16px;background:var(--pocket-soft)!important}.page-back-btn img {filter:none!important;width:14px;height:22px}html[data-theme=dark] .page-back-btn img {filter:brightness(3)!important}
+.connection-screen {overflow:auto!important;padding:30px 22px!important;align-items:flex-start!important}.connection-modal {width:min(100%,480px);padding:28px;border-radius:24px;margin:0 auto;background:var(--pocket-surface)!important;border:1px solid var(--pocket-line)!important;box-shadow:var(--pocket-shadow)!important;color:var(--pocket-ink)!important}.conn-title {color:var(--pocket-ink)!important;font-size:30px!important;text-align:left!important}.connection-panel label {color:var(--pocket-muted)!important;font-size:18px}.form-group {margin-top:22px;margin-bottom:22px}.conn-back-link {min-height:52px;font-size:18px!important;color:var(--pocket-accent)!important}.ip-row {flex-wrap:wrap;gap:10px}.ip-row input {flex:1;min-width:170px!important}.cloud-prefs-row {gap:14px}.cloud-prefs-label {font-size:16px!important;color:var(--pocket-muted)!important}.cloud-prefs-pill {min-height:52px;font-size:18px!important}.cloud-prefs-group {flex-wrap:wrap}.settings-toggle {min-width:58px;min-height:36px}.settings-category {margin-bottom:30px}.settings-section {margin-bottom:14px;gap:20px}.settings-text {min-width:0}.settings-slider {min-height:48px}.settings-drawer-panel {width:min(100%,520px);padding-bottom:env(safe-area-inset-bottom)}.settings-drawer-overlay {z-index:10020}.settings-drawer-close {min-width:56px;min-height:56px;background:var(--pocket-soft)!important;color:var(--pocket-ink)!important;border-radius:16px}.settings-drawer-body {padding:20px}.settings-drawer-body .settings-page {overflow:visible!important}
+.aud-list {max-height:420px}.aud-record-btn,.aud-upload-btn,.aud-loop-btn {min-width:64px;min-height:64px}.aud-play,.aud-kebab {min-width:52px;min-height:52px}.aud-menu {background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border-color:var(--pocket-line)!important}.aud-menu-item {min-height:56px;font-size:18px!important}.aud-modal-overlay {z-index:11000}.aud-timer,.aud-name-text {font-size:20px!important;color:var(--pocket-ink)!important}.acct-tab-bar {overflow-x:auto;min-height:64px;border-color:var(--pocket-line)!important;background:var(--pocket-surface)!important}.acct-tab-btn {min-width:110px;font-size:18px!important;color:var(--pocket-muted)!important}.acct-tab-btn.active {color:var(--pocket-accent)!important;border-color:var(--pocket-accent)!important}.status-section-body {overflow:auto}.status-motor-row,.status-motor-header {min-width:640px;font-size:17px!important;line-height:1.5}.status-bar-track {background:var(--pocket-soft)!important}.status-bar-fill {background:var(--pocket-accent)!important}.errors-empty {font-size:20px;color:var(--pocket-muted)}
+/* Landscape driving: edge-to-edge camera, no app tabs, familiar themed chrome. */
+body[data-screen=control] #app {height:100dvh!important;padding:0!important}
+body[data-screen=control] .pocket-tabbar,body[data-screen=control] .pocket-preview-banner {display:none!important}
+.control-screen {position:relative;overflow:hidden;--drive-stop-size:64px;--drive-controls-gap:12px;--drive-right-inset:max(24px,env(safe-area-inset-right))}.control-overlay {height:100%;overflow:hidden}
+.control-screen .video-bg-fullscreen {object-fit:contain;object-position:center;background:var(--pocket-bg)}
+.control-screen .nav-bar {top:max(12px,env(safe-area-inset-top));left:max(20px,env(safe-area-inset-left));right:calc(var(--drive-right-inset) + var(--drive-stop-size) + var(--drive-controls-gap));height:64px;padding:0;background:transparent!important;gap:16px;pointer-events:none;width:auto}
+.nav-bar-left,.nav-bar-right {pointer-events:auto}.nav-bar-title {font-size:24px!important;letter-spacing:-.5px;color:var(--pocket-ink)!important;text-shadow:none!important}.nav-bar-left {gap:14px}.nav-bar-right {gap:12px;justify-content:flex-end}
+.nav-bar .back-btn {width:60px;height:60px;min-height:60px;margin:0;padding:18px;background:var(--pocket-surface)!important;border:1px solid var(--pocket-line);border-radius:18px;box-shadow:var(--pocket-shadow)}.nav-bar .back-btn img {width:14px;height:24px;filter:none!important}html[data-theme=dark] .nav-bar .back-btn img {filter:brightness(3)!important}
+.nav-bar .nav-divider,.nav-bar .motor-temp-label,.nav-bar .net-type-label,.nav-bar .wifi-icon,.nav-bar .nav-theme-icon {display:none!important}.battery-text {font-size:16px!important;color:var(--pocket-ink)!important;text-shadow:none!important}.battery-icon {transform:scale(1.1);margin-right:8px}.battery-fill-box {background:var(--pocket-soft)!important;border-color:var(--pocket-muted)!important}
+html body .control-screen .nav-circle-icon {width:60px!important;height:60px!important;min-height:60px!important;border:1px solid var(--pocket-line)!important;background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border-radius:18px!important;margin:0!important;display:flex;flex-direction:column;gap:4px;justify-content:center;box-shadow:var(--pocket-shadow)!important}
+.control-screen .nav-circle-icon svg {width:28px;height:28px}.control-screen .nav-circle-icon svg,.control-screen .nav-circle-icon>span {color:var(--pocket-ink)!important}.control-screen .audio-ptt-btn::after {content:'Talk';font-size:13px;font-weight:650}.control-screen .audio-monitor-btn::after {content:'Listen';font-size:13px;font-weight:650}.control-screen .nav-menu-icon::after {content:'Settings';font-size:13px;font-weight:650}
+.control-screen .pip-camera {top:92px!important;left:max(20px,env(safe-area-inset-left))!important;width:178px!important;height:113px!important;max-width:178px;border:2px solid var(--pocket-surface);border-radius:8px;box-shadow:var(--pocket-shadow);z-index:24}.pip-overlay {font-size:16px!important;color:var(--pocket-ink)!important;background:var(--pocket-soft);text-align:center;padding:15px}.control-screen .pip-overlay {font-size:14px!important;padding:8px}.pip-mini-3d {background:var(--pocket-bg)}
+.control-screen .operation-wrapper {position:absolute;inset:auto 0 max(16px,env(safe-area-inset-bottom));display:grid;grid-template-columns:160px minmax(0,1fr) 160px;grid-template-areas:'left actions right';align-items:end;gap:16px;padding:0 max(24px,env(safe-area-inset-left));pointer-events:none}
+.wrapper-1 {grid-area:left;align-items:center}.wrapper-3 {grid-area:right;align-items:center}.wrapper-2 {grid-area:actions;margin:0;justify-content:center;min-width:0}
+.wrapper-1::before,.wrapper-3::before {content:none}
+.joystick-box {width:160px;height:160px;touch-action:none;border:1px solid var(--pocket-line);border-radius:50%;background:var(--pocket-surface);box-shadow:0 4px 18px #142e3620}.joystick-bg {opacity:.85}.joystick-knob {filter:drop-shadow(0 2px 5px #142e3620)}
+.control-screen .action-island-scroll,.control-screen .action-island-divider {display:none!important}.control-screen .action-island {background:none;backdrop-filter:none;padding:0;border-radius:0;justify-content:center}
+.control-screen .action-grid-btn {min-width:64px;width:64px;min-height:64px;height:64px;border:1px solid var(--pocket-line);border-radius:16px;background:var(--pocket-surface);flex-direction:column;gap:4px;box-shadow:var(--pocket-shadow)}.action-grid-btn svg {width:22px;height:22px;opacity:1}.action-grid-btn rect {fill:var(--pocket-ink)}.control-screen .action-grid-btn::after {content:'Actions';font-size:14px;font-weight:650;color:var(--pocket-ink)}
+.pocket-quick-actions {position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:8px;padding-right:72px;z-index:20;pointer-events:none}
+.pocket-quick-actions button {min-width:64px;width:64px;min-height:64px;height:64px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--pocket-surface);border:1px solid var(--pocket-line);border-radius:16px;color:var(--pocket-ink);font-size:14px;font-weight:650;pointer-events:auto;box-shadow:var(--pocket-shadow)}
+.pocket-quick-actions img,.pocket-quick-actions svg {width:22px;height:22px}.pocket-quick-actions img {filter:brightness(.2)}html[data-theme=dark] .pocket-quick-actions img {filter:brightness(2)}
+.pocket-quick-actions button span {font-size:13px;line-height:16px;white-space:nowrap}
+.pocket-quick-actions img,.pocket-quick-actions svg,.control-screen .action-grid-btn svg {flex-shrink:0}
+.control-screen :is(.pocket-quick-actions,.action-grid-btn) {opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s,visibility .18s}
+.control-screen.drive-actions-visible :is(.pocket-quick-actions,.action-grid-btn) {opacity:1;visibility:visible}
+.control-screen.drive-actions-visible .action-grid-btn {pointer-events:auto}
+/* Keep the quick row's transparent padding from intercepting Actions taps. */
+.control-screen.drive-actions-visible .pocket-quick-actions {pointer-events:none}
+/* The open menu owns the middle area; quick actions must not sit over its grid. */
+.control-screen:has(.action-popup) .pocket-quick-actions {opacity:0;visibility:hidden;pointer-events:none;transition:none}
+.control-screen:has(.action-popup) .operation-wrapper {z-index:30}
+.control-screen :is(.video-bg-fullscreen,#three-canvas,#noise-bg) {touch-action:none}
+.pocket-disconnect {display:block;width:100%;min-height:52px;padding:14px 18px;margin:20px 0;border:1px solid var(--pocket-danger);border-radius:16px;background:var(--pocket-danger-soft);color:var(--pocket-danger);font-size:18px;font-weight:650}
+.settings-drawer-panel>.pocket-disconnect {flex-shrink:0;width:calc(100% - 32px);margin:12px 16px 16px}
+.pocket-drive-stop {position:absolute;top:max(12px,env(safe-area-inset-top));right:max(24px,env(safe-area-inset-right));z-index:31;display:flex;align-items:center;justify-content:center;width:64px;min-width:64px;height:64px;min-height:64px;border:1px solid #b42d30;border-radius:18px;background:#b42d30;color:#fff;font-size:23px;font-weight:750;gap:9px;padding:10px 16px;box-shadow:var(--pocket-shadow)}
+.pocket-drive-stop svg {width:32px;height:32px}
+
+/* The normal Stop command is always visible; joint-relaxing Damping remains in Actions. */
+.control-screen .emergency-stop {display:none!important}
+.control-screen .wrapper-2 {padding-left:216px}.action-bar-container {position:static!important;min-width:0}.action-popup {position:fixed!important;bottom:16px!important;top:16px!important;left:50%!important;transform:translateX(-50%);width:min(680px,calc(100vw - 80px));max-height:none!important;z-index:10010!important;background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border:1px solid var(--pocket-line);border-radius:26px;padding:24px;box-shadow:0 16px 90px #07171f66;overflow:auto}
+.action-popup-header {margin-bottom:20px;gap:12px}.action-popup-title {font-size:27px;color:var(--pocket-ink);font-weight:650}.action-popup-edit-btn {min-height:52px;min-width:64px;font-size:18px;background:var(--pocket-soft);color:var(--pocket-ink);border-radius:14px}.action-popup-section-title {font-size:20px;color:var(--pocket-muted)}.action-popup-grid {grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.action-popup-item {min-height:108px;border:1px solid var(--pocket-line);border-radius:18px;background:var(--pocket-soft);color:var(--pocket-ink);padding:12px}.action-popup-icon img {width:44px;height:44px;filter:brightness(.2)}html[data-theme=dark] .action-popup-icon img {filter:brightness(2)}.action-popup-label {font-size:17px;line-height:1.25;color:var(--pocket-ink);white-space:normal}.action-popup-icon {width:48px;height:48px}
+.pocket-rotate-prompt {position:fixed;inset:0;z-index:10030;background:var(--pocket-bg);color:var(--pocket-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}.pocket-rotate-prompt[hidden] {display:none}.pocket-rotate-prompt>svg {width:110px;height:110px;margin-bottom:30px;color:var(--pocket-accent)}.pocket-rotate-prompt h1 {font-size:38px;letter-spacing:-1px;line-height:1.1}.pocket-rotate-prompt p {font-size:21px;line-height:1.5;color:var(--pocket-muted);margin-top:20px}.pocket-rotate-prompt button {margin-top:35px;min-height:64px;padding:16px 24px;border:0;border-radius:18px;font-size:21px;background:var(--pocket-accent);color:var(--pocket-on-accent)}
+/* Mapping uses the same panels and controls as settings. */
+.mapping-body {min-height:0;overflow:auto;display:flex}.mapping-page {height:100%;min-height:0}.mapping-viewport {min-width:0;flex:1;background:var(--pocket-soft)!important}.mapping-sidebar {background:var(--pocket-bg)!important;color:var(--pocket-ink);border-color:var(--pocket-line)!important}.mapping-sidebar-right {width:340px!important;overflow:auto;flex-shrink:0}.mapping-sidebar-left {width:250px!important;overflow:auto;flex-shrink:0}.mapping-stepper {font-size:17px;padding:16px;gap:10px;flex-wrap:wrap;color:var(--pocket-ink);background:var(--pocket-surface)!important}.mapping-section {padding:20px!important;margin:14px}.mapping-btn-row {flex-wrap:wrap;gap:10px}.mapping-input {min-width:0;max-width:100%}.mapping-header-cluster .nav-theme-icon,.mapping-header-cluster .nav-bt-icon,.mapping-header-cluster .motor-temp-label,.mapping-header-cluster .wifi-icon {display:none}.mapping-log {background:var(--pocket-soft)!important;color:var(--pocket-ink)!important;font-size:16px}.mapping-cmd-label,.mapping-cmd-hint,.mapping-subsection-title,.mapping-map-name {font-size:17px!important;color:var(--pocket-muted)!important}.mapping-viewport .pip-camera {width:160px;height:100px;top:14px;left:14px;border-radius:18px}
+@media(max-width:740px) {
+  .pocket-home-grid {grid-template-columns:1fr;gap:10px}.pocket-home,.pocket-tools {padding:24px 22px 32px}.pocket-header {margin-bottom:30px}.pocket-avatar span {display:none}.pocket-intro h1 {font-size:48px}.pocket-intro p {font-size:17px}.pocket-robot-card {height:300px}.pocket-hero-art {background-size:110% auto}.pocket-section-heading {margin-top:8px}.pocket-feature-grid button {padding:20px 16px;min-height:200px}.pocket-feature-grid strong {font-size:20px}.pocket-feature-grid small {font-size:16px}.pocket-tabbar {gap:8px;padding-left:14px;padding-right:14px}.pocket-tabbar button {font-size:15px}.pocket-tool-row {padding:20px 16px;gap:14px}.pocket-tool-row>svg {width:32px;height:32px}.pocket-tool-row small {font-size:16px}.page-content {padding:20px 18px}.page-header {padding:16px 18px!important}.mapping-body {flex-direction:column}.mapping-viewport {order:0;flex:none;height:300px;min-height:280px;width:100%}.mapping-sidebar-right {order:1;width:100%!important;overflow:visible;flex:none}.mapping-sidebar-left {order:2;width:100%!important;max-height:450px;flex:none}.settings-section {padding:18px!important}.mapping-stepper {font-size:15px}.mapping-header-cluster {margin-left:0}
+}
+@media(orientation:landscape) and (max-height:500px) {
+  .control-screen {--drive-stop-size:54px;--drive-controls-gap:8px;--drive-right-inset:max(20px,env(safe-area-inset-right))}
+  .control-screen .nav-bar {top:10px;height:56px}.control-screen .nav-circle-icon,.control-screen .back-btn {width:54px!important;height:54px!important;min-height:54px!important;border-radius:16px!important}.nav-bar-right {gap:8px}.nav-bar-title {font-size:22px!important}.control-screen .pip-camera {top:80px!important;width:162px!important;height:98px!important}.control-screen .operation-wrapper {grid-template-columns:146px minmax(0,1fr) 146px;gap:10px;bottom:max(12px,env(safe-area-inset-bottom));padding:0 max(20px,env(safe-area-inset-left))}.joystick-box {width:146px;height:146px}.pocket-quick-actions {bottom:max(12px,env(safe-area-inset-bottom))}.pocket-drive-stop {top:10px;right:max(20px,env(safe-area-inset-right));width:54px;min-width:54px;height:54px;min-height:54px;font-size:22px}
+}
+@media(max-width:700px) and (orientation:landscape) {
+  .control-screen {--drive-controls-gap:6px}
+  .control-screen .operation-wrapper {grid-template-columns:124px minmax(0,1fr) 124px;padding:0 max(16px,env(safe-area-inset-left))}.joystick-box {width:124px;height:124px}.nav-bar-title,.nav-bar .battery-icon {display:none}.nav-bar-right {gap:6px}.control-screen .pip-camera {width:139px!important;height:84px!important}
+}
+@media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Large symbols replace small labels on the driving toolbar. */
+.control-screen .audio-ptt-btn::after,.control-screen .audio-monitor-btn::after,.control-screen .nav-menu-icon::after {display:none}
+.control-screen .nav-circle-icon svg {width:34px!important;height:34px!important;stroke:var(--pocket-ink)!important}
+.control-screen .nav-menu-icon svg {stroke:var(--pocket-ink)!important}
+html[data-theme=light] .nav-bar .back-btn img,html[data-theme=light] .page-back-btn img {filter:brightness(.15)!important}
+html body .settings-slider-value {background:var(--pocket-soft)!important;color:var(--pocket-ink)!important;font-size:20px!important;padding:8px 12px;border-radius:12px}
+html body .settings-slider {accent-color:var(--pocket-accent);min-height:52px}
+html body .settings-slider::-webkit-slider-thumb {width:30px;height:30px;background:var(--pocket-accent)!important;border:4px solid var(--pocket-surface)!important;box-shadow:0 0 0 1px var(--pocket-line)}
+html body .settings-toggle-slider {background:var(--pocket-soft)!important;border:1px solid var(--pocket-line)}
+html body .settings-toggle input:checked + .settings-toggle-slider {background:var(--pocket-accent)!important}
+html body :is(.bt-mode-btn,.auth-toggle-row,.bt-mode-wrap) {background:var(--pocket-surface)!important;color:var(--pocket-ink)!important;border-color:var(--pocket-line)!important}
+html body .bt-mode-btn-active {background:var(--pocket-accent)!important;color:var(--pocket-on-accent)!important}
+html body .settings-section :is(.settings-input,.settings-input-group) {min-width:0;max-width:100%}
+html body .page-content [style*="font-size:9px"] {font-size:16px!important}
+
+html body .settings-toggle {position:relative;width:64px;min-width:64px;height:44px;min-height:44px}
+html body .settings-toggle input {display:block!important;position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:2;cursor:pointer}
+html body .settings-toggle:has(input:focus-visible) {outline:3px solid var(--pocket-accent);outline-offset:4px;border-radius:26px}
+html body .settings-toggle-slider {border-radius:26px}
+html body .settings-toggle-slider::before {width:28px;height:28px;left:6px;top:7px}
+html body .settings-toggle input:checked + .settings-toggle-slider::before {transform:translateX(24px)}
+.cloud-prefs-row {display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:12px 0 20px}
+.cloud-prefs-group {display:flex;flex-wrap:wrap;gap:4px;padding:4px;background:var(--pocket-soft);border:1px solid var(--pocket-line);border-radius:16px}
+.cloud-prefs-pill {border:0;border-radius:12px;cursor:pointer}
+html body select {appearance:none;-webkit-appearance:none;display:block;width:100%;height:56px!important;padding-right:44px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718486' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E")!important;background-position:right 12px center!important;background-size:24px!important;background-repeat:no-repeat!important}
+
+/* Saved demo stays in the same compact, tap-to-reveal action row. */
+.pocket-quick-actions .pocket-trick-or-treat span {white-space:normal;font-size:11px;line-height:12px;max-width:60px;text-align:center}
+.pocket-quick-actions button:disabled {opacity:.65}
+
+/* Compact translucent Drive controls; keep the glyphs fully opaque. */
+.control-screen .nav-bar :is(.back-btn,.nav-circle-icon),
+.control-screen .pocket-drive-stop {
+  scale:.8;
+  transform-origin:center;
+  background:color-mix(in srgb,var(--pocket-surface) 65%,transparent)!important;
+  border-color:color-mix(in srgb,var(--pocket-line) 65%,transparent)!important;
+  box-shadow:0 3px 12px #142e3614!important;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+.control-screen .pocket-drive-stop {
+  background:rgb(180 45 48 / 65%)!important;
+  border-color:rgb(180 45 48 / 65%)!important;
+}
+
+/* The final toolbar gap follows the icon-only Stop size, not its former text label. */
+.control-screen .nav-bar-right {gap:var(--drive-controls-gap)}
+/* One shared inset keeps the Android toolbar, Stop and PiP aligned. */
+body[data-platform=android] {
+  --drive-touch-top:max(12px,env(safe-area-inset-top));
+}
+body[data-platform=android] .control-screen .nav-bar,
+body[data-platform=android] .control-screen .pocket-drive-stop {
+  top:var(--drive-touch-top);
+}
+body[data-platform=android] .control-screen .pip-camera {
+  top:calc(var(--drive-touch-top) + 80px)!important;
+}
+@media (orientation:landscape) and (max-height:500px) {
+  body[data-platform=android] .control-screen .pip-camera {
+    top:calc(var(--drive-touch-top) + 70px)!important;
+  }
+}
+

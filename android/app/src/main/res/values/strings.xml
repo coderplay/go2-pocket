@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Go2 Pocket</string>
+    <string name="title_activity_main">Go2 Pocket</string>
+    <string name="package_name">com.mzhou.go2pocket</string>
+    <string name="custom_url_scheme">com.mzhou.go2pocket</string>
+</resources>

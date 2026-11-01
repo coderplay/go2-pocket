@@ -1,0 +1,41 @@
+{
+  "name": "go2-pocket",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5186",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4186",
+    "ios:sync": "npm run build && cap sync ios",
+    "ios:open": "cap open ios",
+    "android:sync": "npm run build && cap sync android",
+    "android:open": "cap open android",
+    "android:build": "npm run android:sync && node scripts/build-android.mjs",
+    "check:protocol": "node scripts/check-protocol.mjs",
+    "check": "npm run check:protocol && node scripts/check-native-ble.mjs && GO2_TEST_PLATFORM=android node scripts/check-native-ble.mjs && node scripts/check-camera-framing.mjs && node scripts/check-bundled-audio.mjs && node scripts/check-trick-or-treat.mjs && node scripts/check-android.mjs"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "@playwright/test": "^1.64.1",
+    "@types/node-forge": "^1.3.14",
+    "@types/three": "^0.183.1",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "@capacitor-community/bluetooth-le": "^8.3.0",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/screen-orientation": "^8.0.2",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/status-bar": "^8.0.4",
+    "fflate": "^0.8.2",
+    "node-forge": "^1.3.1",
+    "three": "^0.183.2"
+  }
+}

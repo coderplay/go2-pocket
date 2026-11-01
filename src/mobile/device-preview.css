@@ -1,0 +1,14 @@
+/* Browser-only presentation. The app itself runs inside a phone-size viewport. */
+body.device-preview {background:#e6ece9!important;touch-action:auto}
+.device-preview #app.device-preview-shell {height:100dvh;width:100%;padding:0;display:flex;flex-direction:column}
+.device-preview-header {display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 28px;color:#152f38;border-bottom:1px solid #cbd7d2;flex:none}
+.device-preview-header strong {display:block;font-size:20px;font-weight:650}
+.device-preview-size {display:block;font-size:14px;margin-top:4px;color:#4d6268}
+.device-preview-orientation {display:flex;gap:6px;padding:4px;border:1px solid #cbd7d2;border-radius:16px;background:#dce5df}
+.device-preview-orientation button {border:0;border-radius:12px;background:transparent;color:#39545d;padding:12px 18px;font-size:16px;min-height:48px}
+.device-preview-orientation button[aria-pressed=true] {background:#fff;color:#152f38;box-shadow:0 2px 5px #17383c12}
+.device-preview-stage {flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:16px 20px}
+.device-preview-holder {position:relative;flex:none}
+.device-preview-phone {position:absolute;left:0;top:0;transform-origin:top left;border:12px solid #15282e;border-radius:48px;overflow:hidden;background:#15282e;box-shadow:0 18px 60px #17383c22}
+.device-preview-phone iframe {display:block;border:0;border-radius:36px;background:#f5f6f2}
+@media(max-width:700px) {.device-preview-header {padding:12px 18px;gap:12px;flex-wrap:wrap}.device-preview-orientation button {padding:10px 12px}}

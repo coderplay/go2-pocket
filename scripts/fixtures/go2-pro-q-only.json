@@ -1,0 +1,9 @@
+{
+  "observedOn": "2026-10-23",
+  "source": "Read-only Safari Web Inspector on Go2 Pocket, connected to the user's Go2 Pro",
+  "topic": "rt/lf/lowstate",
+  "motorExample": {"q": 0.044834, "temperature": 38, "lost": 15, "reserve": [0, 621]},
+  "angleSnapshot": [0.044864, 0.716593, -1.534574, -0.051919, 0.805487, -1.556926, 0.106306, 0.648493, -1.474071, -0.034988, 0.711622, -1.431056],
+  "missingDqCount": 12,
+  "note": "Motor example and angle snapshot are separate passive observations. This is not a recording of the failed dance. Test motion is synthesized from these angles."
+}
